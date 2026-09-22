@@ -1,0 +1,300 @@
+{
+  "id": "first_conversation",
+  "title": "First Conversation",
+  "description": "A heartwarming story about a mother and child's first deep conversation.",
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "text": "The evening light filtered through the kitchen window as Mom stirred tea at the stove. She turned, catching your eye, and smiled — the kind that reaches her eyes. \"Sit with me a minute?\"",
+      "choices": [
+        {"text": "Pull up a stool", "next_node": "stool"},
+        {"text": "Lean against the counter", "next_node": "counter"}
+      ]
+    },
+    {
+      "id": "stool",
+      "text": "You pull up the wooden stool, the same one you've used since you were small enough that your feet didn't touch the floor. She slides a mug toward you — chamomile, no honey, just how you like it now.",
+      "choices": [
+        {"text": "\"Thanks, Mom.\"", "next_node": "thanks"},
+        {"text": "Blow on the steam, watching it curl", "next_node": "steam"}
+      ]
+    },
+    {
+      "id": "counter",
+      "text": "You lean against the cool counter, arms crossed. She doesn't push, just nods and pours two mugs. The silence stretches, comfortable, weighted with years of knowing when to speak and when to wait.",
+      "choices": [
+        {"text": "Take the mug she offers", "next_node": "thanks"},
+        {"text": "\"What did you want to talk about?\"", "next_node": "direct"}
+      ]
+    },
+    {
+      "id": "thanks",
+      "text": "\"Thanks, Mom.\" Simple. She wraps her hands around her own mug, thumb tracing the chipped ceramic rim. \"I've been thinking about the garden,\" she starts. \"The tomatoes are coming in early this year.\"",
+      "choices": [
+        {"text": "\"Early? It's barely July.\"", "next_node": "early"},
+        {"text": "\"You'll make sauce?\"", "next_node": "sauce"}
+      ]
+    },
+    {
+      "id": "steam",
+      "text": "You blow on the steam, watching it curl and disappear. She watches you watch it. \"You used to do that,\" she says quietly. \"Blow on everything. Hot chocolate, soup, bath water. Said you were teaching the steam manners.\"",
+      "choices": [
+        {"text": "Laugh, \"Did it work?\"", "next_node": "manners"},
+        {"text": "\"I don't remember that.\"", "next_node": "dont_remember"}
+      ]
+    },
+    {
+      "id": "direct",
+      "text": "She takes a slow sip. \"Nothing specific. Just... wanted to see you. Really see you. Not the version that visits on holidays or calls on Sundays. The person you are on a random Tuesday.\"",
+      "choices": [
+        {"text": "\"That's... surprisingly heavy, Mom.\"", "next_node": "heavy"},
+        {"text": "Nod, \"I'm still figuring that out myself.\"", "next_node": "figuring_out"}
+      ]
+    },
+    {
+      "id": "early",
+      "text": "\"Climate, probably,\" she says with a shrug that carries more weight than the gesture suggests. \"Or maybe I just got better at timing. Planted them when the soil told me, not the calendar.\"",
+      "choices": [
+        {"text": "\"Since when do you listen to dirt?\"", "next_node": "dirt"},
+        {"text": "\"Sounds like a metaphor.\"", "next_node": "metaphor"}
+      ]
+    },
+    {
+      "id": "sauce",
+      "text": "\"If you come help peel them.\" Her eyes crinkle. \"Your father claims he'll help but somehow disappears when the boiling water comes out. Your brother says he's 'allergic to manual labor.'\"",
+      "choices": [
+        {"text": "\"When?\"", "next_node": "when_sauce"},
+        {"text": "\"I'll bring the good bread.\"", "next_node": "bread"}
+      ]
+    },
+    {
+      "id": "manners",
+      "text": "\"Eventually. You'd wait until it was perfect — not too hot, not too cold. Goldilocks steam.\" She shakes her head, smiling. \"Your father used to say you'd negotiate with a thermostat.\"",
+      "choices": [
+        {"text": "\"Dad always did exaggerate.\"", "next_node": "dad_exaggerate"},
+        {"text": "\"Some things don't change.\"", "next_node": "dont_change"}
+      ]
+    },
+    {
+      "id": "dont_remember",
+      "text": "\"You were four. Maybe five.\" She says it gently, no judgment. \"Memory's funny. The things we keep, the things that slip.\" She pauses. \"I remember. That's enough for both of us.\"",
+      "choices": [
+        {"text": "\"That's... nice. Really.\"", "next_node": "nice"},
+        {"text": "Stay quiet, let the moment settle", "next_node": "settle"}
+      ]
+    },
+    {
+      "id": "heavy",
+      "text": "She laughs, a low warm sound. \"Heavy? That's just Tuesday. Wait until Thursday.\" She sobers. \"But seriously. You're an adult now. Have been for a while. And I realized I don't actually know who that adult is.\"",
+      "choices": [
+        {"text": "\"Fair.\"", "next_node": "fair"},
+        {"text": "\"What do you want to know?\"", "next_node": "want_to_know"}
+      ]
+    },
+    {
+      "id": "figuring_out",
+      "text": "She sets down her mug. \"Honest answer. I like that.\" She studies you — really studies you, the way she used to check your forehead for fever. \"Tell me something true. Not the highlight reel.\"",
+      "choices": [
+        {"text": "Share a real struggle", "next_node": "real_struggle"},
+        {"text": "\"I'm tired, Mom. Deep tired.\"", "next_node": "deep_tired"}
+      ]
+    },
+    {
+      "id": "dirt",
+      "text": "\"Since the tomatoes told me they were ready.\" She grins. \"Listen to anything long enough, it'll talk back. Plants, people, that stubborn lawn mower of your father's.\"",
+      "choices": [
+        {"text": "\"The mower definitely talks back.\"", "next_node": "mower"},
+        {"text": "\"People too?\"", "next_node": "people_talk"}
+      ]
+    },
+    {
+      "id": "metaphor",
+      "text": "\"Maybe everything's a metaphor if you look sideways enough.\" She taps her temple. \"Timing. Patience. Knowing when to push and when to wait. Works for tomatoes. Works for kids too.\"",
+      "choices": [
+        {"text": "\"Ouch. Called out.\"", "next_node": "called_out"},
+        {"text": "\"Did you wait for me?\"", "next_node": "wait_for_me"}
+      ]
+    },
+    {
+      "id": "when_sauce",
+      "text": "\"Next weekend? Saturday morning. Your father will pretend to supervise.\" She smirks. \"We'll make a day of it. Music. Lunch. The works.\"",
+      "choices": [
+        {"text": "\"I'll be there.\"", "next_node": "be_there"},
+        {"text": "\"Can I bring someone?\"", "next_node": "bring_someone"}
+      ]
+    },
+    {
+      "id": "bread",
+      "text": "\"The sourdough from Miller's?\" Her face lights up. \"You remember. Saturday. We'll make a production of it.\"",
+      "choices": [
+        {"text": "\"It's a date.\"", "next_node": "be_there"},
+        {"text": "\"Only if you share the recipe.\"", "next_node": "recipe"}
+      ]
+    },
+    {
+      "id": "dad_exaggerate",
+      "text": "\"Exaggerate. Embellish. Turn a grocery run into an epic.\" She shakes her head fondly. \"But he loved your steam negotiations. Said you were training for diplomacy.\"",
+      "choices": [
+        {"text": "\"Diplomacy. Right.\"", "next_node": "diplomacy"},
+        {"text": "\"Miss him.\"", "next_node": "miss_him"}
+      ]
+    },
+    {
+      "id": "dont_change",
+      "text": "\"Some things.\" She meets your eyes. \"The important things. How you take your tea. How you pause before answering. How you still blow on hot things.\"",
+      "choices": [
+        {"text": "\"You notice everything.\"", "next_node": "notice_everything"},
+        {"text": "\"Not everything.\"", "next_node": "not_everything"}
+      ]
+    },
+    {
+      "id": "nice",
+      "text": "She nods, accepting. \"It is. Being remembered. Being the one who remembers.\" She glances at the window, where dusk is settling. \"Time does that. Makes witnesses of us all.\"",
+      "choices": [
+        {"text": "\"Witnesses.\"", "next_node": "witnesses"},
+        {"text": "Sip tea, let silence breathe", "next_node": "silence_breathe"}
+      ]
+    },
+    {
+      "id": "settle",
+      "text": "The silence settles like dust motes in the evening light. Neither of you rushes to fill it. Her hand rests on the table, close to yours — not touching, but close. An invitation, not a demand.",
+      "choices": [
+        {"text": "Cover her hand with yours", "next_node": "hand_cover"},
+        {"text": "\"Love you, Mom.\"", "next_node": "love_you"}
+      ]
+    },
+    {
+      "id": "fair",
+      "text": "\"Fair.\" She repeats it, testing the word. \"Fair's a good place to start. Not 'fine.' Not 'good.' Fair.\" She leans back. \"So. Fair Tuesday. What's fair look like for you lately?\"",
+      "choices": [
+        {"text": "Describe a fair day", "next_node": "fair_day"},
+        {"text": "\"Fair is... complicated.\"", "next_node": "complicated"}
+      ]
+    },
+    {
+      "id": "want_to_know",
+      "text": "\"Everything. Nothing. The in-between.\" She shrugs. \"Your favorite color changed three times before you were ten. I missed the fourth. What is it now?\"",
+      "choices": [
+        {"text": "\"Sage green.\"", "next_node": "sage_green"},
+        {"text": "\"Depends on the day.\"", "next_node": "depends_day"}
+      ]
+    },
+    {
+      "id": "real_struggle",
+      "text": "You tell her. The project at work that's sinking. The friend who stopped calling. The 3 AM thoughts. She doesn't interrupt, doesn't fix. Just listens — the way she listened to scraped knees and broken toys.",
+      "choices": [
+        {"text": "Feel lighter after", "next_node": "lighter"},
+        {"text": "Cry, just a little", "next_node": "cry"}
+      ]
+    },
+    {
+      "id": "deep_tired",
+      "text": "The words hang. She doesn't flinch. \"I know that tired. Bone-deep. Soul-deep.\" She reaches across, fingers brushing your wrist. \"Tell me about it. Or don't. Either way, I'm here.\"",
+      "choices": [
+        {"text": "Tell her anyway", "next_node": "tell_anyway"},
+        {"text": "\"Just... stay.\"", "next_node": "just_stay"}
+      ]
+    },
+    {
+      "id": "mower",
+      "text": "\"That mower has more personality than half the neighborhood.\" She laughs. \"Your father swears it's possessed. I say it just has standards.\"",
+      "choices": [
+        {"text": "\"Standards.\"", "next_node": "mower_standards"},
+        {"text": "\"Dad talks to it.\"", "next_node": "dad_talks_mower"}
+      ]
+    },
+    {
+      "id": "people_talk",
+      "text": "\"People especially. Most just don't listen right. They listen to reply, not to understand. You though — you've always listened with your whole self.\"",
+      "choices": [
+        {"text": "\"Not always.\"", "next_node": "not_always_listen"},
+        {"text": "\"Learned from the best.\"", "next_node": "learned_best"}
+      ]
+    },
+    {
+      "id": "called_out",
+      "text": "\"Not calling out. Calling in.\" She distinguishes carefully. \"There's a difference. One pushes away. The other pulls close.\"",
+      "choices": [
+        {"text": "\"Pulling close works.\"", "next_node": "pulling_close"},
+        {"text": "\"When did you get so wise?\"", "next_node": "so_wise"}
+      ]
+    },
+    {
+      "id": "wait_for_me",
+      "text": "\"Every day. Every stage. The tantrums, the silence, the door slams, the first apartment key in your hand.\" Her voice thickens. \"Waiting's the hardest part. And the most important.\"",
+      "choices": [
+        {"text": "\"You waited well.\"", "next_node": "waited_well"},
+        {"text": "\"I'm here now.\"", "next_node": "here_now"}
+      ]
+    },
+    {
+      "id": "be_there",
+      "text": "She beams. \"Good. It's settled then. Saturday. Miller's bread. Sauce all afternoon.\" She checks the clock. \"Speaking of — I should start the onions.\"",
+      "choices": [
+        {"text": "\"Need help?\"", "next_node": "need_help"},
+        {"text": "\"Go. I'll clean up.\"", "next_node": "clean_up"}
+      ]
+    },
+    {
+      "id": "bring_someone",
+      "text": "Her expression shifts — curious, careful. \"Someone special?\" The question carries no pressure, just openness. A door left ajar.",
+      "choices": [
+        {"text": "\"Maybe. Still figuring it out.\"", "next_node": "figuring_out_person"},
+        {"text": "\"Just a friend.\"", "next_node": "just_friend"}
+      ]
+    },
+    {
+      "id": "recipe",
+      "text": "\"The recipe's in my head. And a stained index card in the tin box.\" She winks. \"But the secret ingredient? That's staying secret.\"",
+      "choices": [
+        {"text": "\"Secret ingredient?\"", "next_node": "secret_ingredient"},
+        {"text": "\"Challenge accepted.\"", "next_node": "challenge_accepted"}
+      ]
+    },
+    {
+      "id": "witnesses",
+      "text": "\"Witnesses to each other. That's the job, isn't it?\" She smiles, soft and certain. \"To say: I saw you. You mattered. You matter.\"",
+      "choices": [
+        {"text": "\"You matter too.\"", "next_node": "you_matter_too"},
+        {"text": "Nod, throat tight", "next_node": "throat_tight"}
+      ]
+    },
+    {
+      "id": "silence_breathe",
+      "text": "The silence breathes. Expands. Fills the kitchen with things too large for words. Steam rises. The clock ticks. Her hand remains close — an anchor, a question, an answer all at once.",
+      "choices": [
+        {"text": "Cover her hand with yours", "next_node": "hand_cover"},
+        {"text": "\"Thank you.\" For what? Everything.", "next_node": "thank_you"}
+      ]
+    },
+    {
+      "id": "hand_cover",
+      "text": "Your hand covers hers. Warm. Solid. Real. She turns her palm up, fingers intertwining — the same grip that guided you across parking lots, through first days of school, into the world.",
+      "choices": [
+        {"text": "\"Love you, Mom.\"", "next_node": "love_you"},
+        {"text": "Squeeze gently, say nothing", "next_node": "squeeze_nothing"}
+      ]
+    },
+    {
+      "id": "love_you",
+      "text": "Her eyes glisten. \"Love you too. More than tomatoes. More than tea. More than words can hold.\" She squeezes back. \"Now. Enough feelings. Who's doing dishes?\"",
+      "choices": [
+        {"text": "\"I got it.\"", "next_node": "ending"},
+        {"text": "\"Rock paper scissors?\"", "next_node": "rps"}
+      ]
+    },
+    {
+      "id": "ending",
+      "text": "You rise, collecting mugs. She protests half-heartedly, then yields with a grin. The kitchen fills with running water, clinking ceramic, the easy rhythm of shared labor. Outside, stars prick the dark. Inside, something mends.",
+      "choices": [
+        {"text": "Continue to next chapter", "next_node": "end"}
+      ]
+    },
+    {
+      "id": "end",
+      "text": "The night settles. The conversation lingers — in the clean mugs, the damp towel, the space between heartbeats where understanding lives. This is how it happens. Not in grand gestures. In tea. In silence. In showing up.",
+      "choices": []
+    }
+  ]
+}

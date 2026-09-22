@@ -1,0 +1,85 @@
+{
+  "id": "mama_na_mtoto",
+  "title": "Mama na Mtoto",
+  "description": "A Swahili story about a mother sharing timeless wisdom with her child over an evening meal.",
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "text": "Jioni moja, Mama alikuwa akipiga ugali jikoni. Harufu ya mchuzi wa kunde ilijaza nyumba nzima. Alipokuona ukingia, alitabasamu. Kaa hapa mwanangu. Tuzungumze.",
+      "choices": [
+        {
+          "text": "Kaa karibu naye",
+          "next_node": "karibu"
+        },
+        {
+          "text": "Mama unahitaji msaada?",
+          "next_node": "msaada"
+        }
+      ]
+    },
+    {
+      "id": "karibu",
+      "text": "Ulikaa kwenye kiti cha mbao karibu na moto. Mama aliendelea kupiga ugali polepole, midomo yake ikisogea - labda alikuwa akiimba wimbo wa zamani.",
+      "choices": [
+        {
+          "text": "Mama unafikiri nini?",
+          "next_node": "unafikiri"
+        },
+        {
+          "text": "Sikiliza sauti ya moto kwa muda",
+          "next_node": "asante"
+        }
+      ]
+    },
+    {
+      "id": "msaada",
+      "text": "Tayari unanisaidia kwa kuwepo hapa. Wakati mwingine hiyo ndiyo msaada mkubwa zaidi.",
+      "choices": [
+        {
+          "text": "Sikaa nikafikiria hilo",
+          "next_node": "asante"
+        }
+      ]
+    },
+    {
+      "id": "unafikiri",
+      "text": "Ninafikiria wewe mwanangu. Ninafikiria jinsi ulivyokua haraka kama mti wa mwembe ambao ulikua bila mimi kuona.",
+      "choices": [
+        {
+          "text": "Nakukumbuka ukitusimulia hadithi",
+          "next_node": "hadithi"
+        },
+        {
+          "text": "Sikuwa mbali Mama",
+          "next_node": "asante"
+        }
+      ]
+    },
+    {
+      "id": "hadithi",
+      "text": "Mama alipiga makofi kidogo. Unakumbuka ile ya Sungura na Tembo? Uliuliza maswali mengi sana. Kila usiku hadithi nyingine.",
+      "choices": [
+        {
+          "text": "Niambie tena. Leo usiku.",
+          "next_node": "asante"
+        }
+      ]
+    },
+    {
+      "id": "asante",
+      "text": "Asante. Mama alisema neno hilo kwa upole kana kwamba ni yeye anayekushukuru. Ugali ulipikwa. Nyumba ilijaa harufu nzuri. Na moyo wako ulijaa pia.",
+      "choices": [
+        {
+          "text": "Endelea hadi sehemu inayofuata",
+          "next_node": "mwisho"
+        }
+      ]
+    },
+    {
+      "id": "mwisho",
+      "text": "Ulikula pamoja mkizungumza kidogo mkikaa kimya kidogo. Nyota zilionekana dirishani. Mama aliimba wimbo wa zamani - sauti yake laini kama mto wa usiku. Hukutaka kwenda popote.",
+      "choices": []
+    }
+  ]
+}
