@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coloring Art - Mother Talk Linguo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="mobile-header">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2v-7l9 7L3 9z" />
+        <polyline points="9 22 9 12 15 15 15 22" />
+      </svg>
+      <span>Mother Talk</span>
+    </div>
+    <button class="menu-btn" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+  </header>
+
+  <main class="page-container">
+    <section class="coloring-hero">
+      <div class="coloring-hero-content">
+        <div class="coloring-badge">Traditional Patterns</div>
+        <h1>Coloring Art</h1>
+        <p>Express creativity with authentic African motifs and patterns</p>
+      </div>
+    </section>
+
+    <section class="coloring-gallery">
+      <div class="coloring-item">
+        <div class="coloring-preview">
+          <svg width="200" height="200" viewBox="0 0 200 200" fill="none" stroke="#8B4513" stroke-width="20">
+            <path d="M50 100 L50 30 L150 30 L150 100" />
+            <path d="M50 100 L50 170 L150 170 L150 100" />
+            <circle cx="100" cy="100" r="40" />
+            <g fill="#A0522D">
+              <path d="M85 85 Q100 70 115 85" />
+              <path d="M85 115 Q100 130 115 115" />
+              <path d="M85 85 Q95 95 100 105" />
+              <path d="M115 85 Q105 95 100 105" />
+            </g>
+          </svg>
+        </div>
+        <div class="coloring-info">
+          <h3>Kente Geometry</h3>
+          <p>Traditional Ghanaian kente cloth patterns with symbolic meaning</p>
+        </div>
+        <button class="btn-icon">Color</button>
+      </div>
+
+      <div class="coloring-item">
+        <div class="coloring-preview">
+          <svg width="200" height="200" viewBox="0 0 200 200" fill="none" stroke="#2E8B57" stroke-width="20">
+            <path d="M25 75 L75 25 L125 75 L175 25 L175 125 L125 175 L75 125 L25 175 L25 75 Z" />
+            <g fill="#3CB371">
+              <path d="M65 85 Q80 70 95 85" />
+              <path d="M65 115 Q80 130 95 115" />
+              <path d="M85 65 Q95 75 105 85" />
+              <path d="M105 85 Q95 95 105 105" />
+            </g>
+            <circle cx="100" cy="100" r="50" stroke="#2E8B57" fill="none" stroke-width="4" />
+          </svg>
+        </div>
+        <div class="coloring-info">
+          <h3>Adinkra Marks</h3>
+          <p>Traditional Ghanaian symbolic markings with linguistic significance</p>
+        </div>
+        <button class="btn-icon">Color</button>
+      </div>
+
+      <div class="coloring-item">
+        <div class="coloring-preview">
+          <svg width="200" height="200" viewBox="0 0 200 200" fill="none" stroke="#FFD700" stroke-width="20">
+            <rect x="20" y="20" width="160" height="160" rx="12" ry="12" />
+            <g fill="#B8860B">
+              <path d="M45 65 Q70 50 95 75" />
+              <path d="M45 135 Q70 150 95 125" />
+              <path d="M70 45 Q85 25 105 50" />
+              <path d="M125 70 Q105 85 125 110" />
+            </g>
+          </svg>
+        </div>
+        <div class="coloring-info">
+          <h3>Yoruba Geometry</h3>
+          <p>Traditional Yoruba pattern designs with indigenous script elements</p>
+        </div>
+        <button class="btn-icon">Color</button>
+      </div>
+    </section>
+
+    <section class="coloring-tools">
+      <div class="tools-header">
+        <h2>Coloring Studio</h2>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-palette">
+          <div class="palette-title">Color Palette</div>
+          <div class="colors">
+            <div class="color-square" style="background: #8B4513;" data-color="terracotta"></div>
+            <div class="color-square" style="background: #2E8B57;" data-color="forest-green"></div>
+            <div class="color-square" style="background: #FFD700;" data-color="gold"></div>
+            <div class="color-square" style="background #CD853F;" data-color="brown"></div>
+            <div class="color-square" style="background: #FF69B4;" data-color="pink"></div>
+            <div class="color-square" style="background: #4682B4;" data-color="steel-blue"></div>
+          </div>
+        </div>
+        <div class="tool-brush">
+          <div class="brush-title">Brush Size</div>
+          <button class="btn-small" data-size="small">S</button>
+          <button class="btn-small active" data-size="medium">M</button>
+          <button class="btn-small" data-size="large">L</button>
+        </div>
+        <div class="tool-action">
+          <div class="brush-title">Actions</div>
+          <button class="btn-reset">Reset</button>
+          <button class="btn-download">Download</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav-bottom">
+    <div class="nav-wrapper">
+      <a href="index.html" class="nav-link active">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 3v2l3 9l5-7 7 11l-5 3V13l-5 3-7 11 5 3V5l-5-3 7-11L12 3z" />
+          <polyline points="12 3 12 9 15 15" />
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="artifact.html" class="nav-link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <circle cx="6" cy="6" r="3" />
+          <circle cx="18" cy="6" r="3" />
+        </svg>
+        <span>Artifacts</span>
+      </a>
+    </div>
+  </nav>
+
+  <script src="script.js"></script>
+</body>
+</html>
