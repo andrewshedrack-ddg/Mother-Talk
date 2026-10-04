@@ -1,0 +1,95 @@
+{
+  "id": "mama_gi_nyathi",
+  "title": "Mama gi Nyathi",
+  "description": "A Dholuo story about a mother and child sharing a quiet evening of connection and old tales.",
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "text": "Odhiambo moro Mama ne tedo e dala. Dor nyuka gi ugali ne opong od duto. Kane oneno i donjo ne ochako nyiero. Bi ibed kae nyathi. Wawachu singruok.",
+      "choices": [
+        {
+          "text": "Ibed machiegni kode",
+          "next_node": "machiegni"
+        },
+        {
+          "text": "Mama idwaro kony?",
+          "next_node": "kony"
+        }
+      ]
+    },
+    {
+      "id": "machiegni",
+      "text": "Ibet e kom yien machiegni gi mach. Mama daher medo tedo nyingo wuoyo matin matin mana ka onyimbe wer moro ma kwe.",
+      "choices": [
+        {
+          "text": "Mama iparo ango?",
+          "next_node": "iparo"
+        },
+        {
+          "text": "Winj duol mac kwa kor",
+          "next_node": "winj"
+        }
+      ]
+    },
+    {
+      "id": "kony",
+      "text": "Kony? Nomiya wango makoore. Iseskony nikech inie kae. Gimoro gi gimoro mano kony maduong moloyo.",
+      "choices": [
+        {
+          "text": "Paro maber.",
+          "next_node": "paro"
+        }
+      ]
+    },
+    {
+      "id": "iparo",
+      "text": "Aparo i nyathi. Aparo kaka oidho mathoth mana ka yiend mango ma oidho ka ok aneno.",
+      "choices": [
+        {
+          "text": "Nene ok adhi mabor.",
+          "next_node": "mwisho"
+        },
+        {
+          "text": "Ayudo paro jokoro gi weche.",
+          "next_node": "weche"
+        }
+      ]
+    },
+    {
+      "id": "winj",
+      "text": "Duol mac gi duol opato no okelo wer mar dala. Mama oneno wang dini gi ngima. Iherore kwe. Bende ibet kamano nyahera.",
+      "choices": [
+        {
+          "text": "Ango ma ok loko?",
+          "next_node": "mwisho"
+        }
+      ]
+    },
+    {
+      "id": "paro",
+      "text": "Ngima obolore gi gik matindo matindo. Wuoyo chiemo bedo kaachiel. En teko mar jood.",
+      "choices": [
+        {
+          "text": "Erokamano Mama.",
+          "next_node": "mwisho"
+        }
+      ]
+    },
+    {
+      "id": "weche",
+      "text": "Wuoyo! Mama opande toke matin. Ipar kuom aluru gi Lwanda? Ipenjo penjoge mangeny. Gaber ka gaber sigana moro.",
+      "choices": [
+        {
+          "text": "Naw chiel. Kiny gotieno.",
+          "next_node": "mwisho"
+        }
+      ]
+    },
+    {
+      "id": "mwisho",
+      "text": "Nochamo kaachiel giwuoyo matin gibedo yot. Sulwe ne noneno e diend dier. Mama nowero wer moro machon - duol mare ler mana ka aora e otieno. Ninjamat dhi kama amora.",
+      "choices": []
+    }
+  ]
+}

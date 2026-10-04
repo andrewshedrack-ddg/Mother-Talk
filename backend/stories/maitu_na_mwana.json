@@ -1,0 +1,75 @@
+{
+  "id": "maitu_na_mwana",
+  "title": "Maitu na Mwana",
+  "description": "A Kikuyu story about a mother and child sharing stories and wisdom on a quiet evening.",
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "text": "Ira riria riaciarwo, Maitu aarugaga irio. Riera ria iringa na mbembe rikimenya nyumba yothe. Nake akuona, akuguaka githuri. Hiuka uhore haha mwana wakwa.",
+      "choices": [
+        {
+          "text": "Hiuka uhore haha",
+          "next_node": "hau"
+        },
+        {
+          "text": "Ningwendia gukuria mwongo?",
+          "next_node": "mwongo"
+        }
+      ]
+    },
+    {
+      "id": "hau",
+      "text": "Uikara hau ngaragu cia moto ikuiganio nyutu. Maitu arugaruga irio ekaniria nyimbo ya kale nake ndari kuigua - riua ria kwao.",
+      "choices": [
+        {
+          "text": "Maitu urogota atia?",
+          "next_node": "urogota"
+        },
+        {
+          "text": "Iguika gukua kwa moto",
+          "next_node": "ngano"
+        }
+      ]
+    },
+    {
+      "id": "mwongo",
+      "text": "Ndiri mwongo. No wone iguru mwana wakwa. Uhoro uyu niwe nduirwo ndene ya moyo waku - uu ni wake waku.",
+      "choices": [
+        {
+          "text": "Thiira hau uhore",
+          "next_node": "hau"
+        }
+      ]
+    },
+    {
+      "id": "urogota",
+      "text": "Ndirogota wewe mwana wakwa. Ndirogota uhooru waku - niguo maheni muno na ndingui theru ya ngoro yaku.",
+      "choices": [
+        {
+          "text": "Ndiri haraka ya guthi.",
+          "next_node": "ngano"
+        },
+        {
+          "text": "Ngwendia kugua ngano yaku.",
+          "next_node": "ngano"
+        }
+      ]
+    },
+    {
+      "id": "ngano",
+      "text": "Maitu aaikara agia kwora irio. Na ekaniria ngano ya kale - ya Gichiku na Ndimu - sauti yake ikinyora riera ta maingi ma ruuji. Uigua uguo na moyo wako.",
+      "choices": [
+        {
+          "text": "Iguika ngano mpaka thutha",
+          "next_node": "mwisho"
+        }
+      ]
+    },
+    {
+      "id": "mwisho",
+      "text": "Nyutu ya irio na ngano cia akiukuru - ici ciakuagatia ta githuri gia wendo. Kuri na mbura ya thata. Maitu akuguaka na wira wakwa. Na nyumba ikaigwa na ruo rwa thimu.",
+      "choices": []
+    }
+  ]
+}
