@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Mother Talk — Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Mother Talk</h1>
+            <p class="subtitle">Learn African languages through stories</p>
+            
+            {% if error %}
+            <div class="error {{ 'login' if error == 'Invalid credentials' else 'register' }}">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                {% if not is_login %}
+                <div class="form-group">
+                    <label for="confirm">Confirm password</label>
+                    <input type="password" id="confirm" name="cpw" required>
+                </div>
+                {% endif %}
+                <button type="submit" class="btn-primary">{{ is_login ? 'Sign in' : 'Create account' }}</button>
+            </form>
+            
+            <p class="divider">or continue with</p>
+            <div class="social-actions">
+                <button class="btn-social">Google</button>
+                <button class="btn-social">Facebook</button>
+            </div>
+            
+            <p class="account-link">
+                {{ is_login ? 'Don\'t have an account? ' : 'Already have an account? ' }}
+                <a href="#" class="link-primary">{{ is_login ? 'Sign up' : 'Sign in' }}</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

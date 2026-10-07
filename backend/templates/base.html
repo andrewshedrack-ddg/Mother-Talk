@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Mother Talk{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=Lora:wght@400;600&display=swap">
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="main-header">
+            <div class="header-inner">
+                <a href="/" class="logo">Mother Talk</a>
+                <nav>
+                    <ul class="header-nav">
+                        <li><a href="{{ url_for('story_list') }}">Stories</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <span class="user-greeting">Hello, {{ current_user.email.split('@')[0] }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn-secondary">Sign out</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn-primary">Sign in</a>
+                        <a href="{{ url_for('login') }}" class="btn-ghost">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="main-footer">
+            <div class="footer-inner">
+                <p>Mother Talk — Learn African languages through storytelling</p>
+                <p>© {{ year() }} Mother Talk Project</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

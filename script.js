@@ -1,6 +1,6 @@
 // ============================================================
-   Mother Talk - JavaScript Interactivity
-   ============================================================
+//   Mother Talk - JavaScript Interactivity
+//   ============================================================
 
 /* ============================================================
    Mobile Navigation Toggle
@@ -10,7 +10,6 @@ const navLinks = document.querySelectorAll('.nav-link');
 
 if (menuBtn) {
   menuBtn.addEventListener('click', () => {
-    // Mobile nav functionality can be expanded here
     menuBtn.setAttribute('aria-expanded', 
       menuBtn.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
   });
@@ -74,9 +73,7 @@ const colorSquares = document.querySelectorAll('.color-square');
 
 colorSquares.forEach(square => {
   square.addEventListener('click', () => {
-    // Remove active from all squares
     colorSquares.forEach(s => s.classList.remove('active'));
-    // Add active to clicked
     square.classList.add('active');
   });
 });
@@ -88,9 +85,7 @@ const btnSmall = document.querySelectorAll('.btn-small');
 
 btnSmall.forEach(btn => {
   btn.addEventListener('click', () => {
-    // Remove active from all buttons
     btnSmall.forEach(b => b.classList.remove('active'));
-    // Add active to clicked
     btn.classList.add('active');
   });
 });
@@ -102,9 +97,7 @@ const btnReset = document.querySelector('.btn-reset');
 
 if (btnReset) {
   btnReset.addEventListener('click', () => {
-    // Reset all color squares
     colorSquares.forEach(s => s.classList.remove('active'));
-    // Reset brush size
     btnSmall.forEach(b => b.classList.remove('active'));
     btnSmall.forEach(b => {
       if (b.dataset.size === 'medium') b.classList.add('active');
@@ -174,4 +167,13 @@ if (btnDownload) {
    ============================================================ */
 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.documentElement.style.setProperty('--scroll-behavior', 'auto', 'important');
+}
+
+/* ============================================================
+   Focus states
+   ============================================================ */
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--africa-gold);
+  outline-offset: 4px;
 }
