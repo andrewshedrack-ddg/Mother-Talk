@@ -1,1 +1,56 @@
-[{"description":"Spend a day with Wanjiru: greetings at sunrise, shopping at the market, goodbye at sunset.","file":"data/wanjiru.json","flag":"ke","id":"wanjiru","language":"Kikuyu","title":"Wanjiru's Market Day"},{"description":"Help Mutiso bring in the harvest: greetings, counting and sharing.","file":"data/kamba.json","flag":"ke","id":"kamba","language":"Kamba","title":"Mutiso's Harvest Day"},{"description":"A day with Amina: Fort Jesus, coconuts and the ocean.","file":"data/swahili-mombasa.json","flag":"ke","id":"mombasa","language":"Swahili","title":"Amina's Mombasa Day"},{"description":"Join Ochieng on Lake Victoria: boats, tilapia and blessings.","file":"data/luo.json","flag":"ke","id":"luo","language":"Dholuo","title":"Ochieng's Fishing Morning"},{"description":"Brave Kampala's busy markets with Nakato.","file":"data/luganda.json","flag":"ug","id":"luganda","language":"Luganda","title":"Nakato's Kampala Market"},{"description":"Smell the cloves on Zanzibar's spice farms with Zuhura.","file":"data/zanzibar.json","flag":"tz","id":"zanzibar","language":"Swahili","title":"Zanzibar Spice Adventure"}]
+[
+ {
+  "description": "Spend a day with Wanjiru: greetings at sunrise, shopping at the market, goodbye at sunset.",
+  "file": "data/wanjiru.json",
+  "flag": "ke",
+  "id": "wanjiru",
+  "language": "Kikuyu",
+  "title": "Wanjiru's Market Day",
+  "country": "Kenya"
+ },
+ {
+  "description": "Help Mutiso bring in the harvest: greetings, counting and sharing.",
+  "file": "data/kamba.json",
+  "flag": "ke",
+  "id": "kamba",
+  "language": "Kamba",
+  "title": "Mutiso's Harvest Day",
+  "country": "Kenya"
+ },
+ {
+  "description": "A day with Amina: Fort Jesus, coconuts and the ocean.",
+  "file": "data/swahili-mombasa.json",
+  "flag": "ke",
+  "id": "mombasa",
+  "language": "Swahili",
+  "title": "Amina's Mombasa Day",
+  "country": "Kenya"
+ },
+ {
+  "description": "Join Ochieng on Lake Victoria: boats, tilapia and blessings.",
+  "file": "data/luo.json",
+  "flag": "ke",
+  "id": "luo",
+  "language": "Dholuo",
+  "title": "Ochieng's Fishing Morning",
+  "country": "Kenya"
+ },
+ {
+  "description": "Brave Kampala's busy markets with Nakato.",
+  "file": "data/luganda.json",
+  "flag": "ug",
+  "id": "luganda",
+  "language": "Luganda",
+  "title": "Nakato's Kampala Market",
+  "country": "Uganda"
+ },
+ {
+  "description": "Smell the cloves on Zanzibar's spice farms with Zuhura.",
+  "file": "data/zanzibar.json",
+  "flag": "tz",
+  "id": "zanzibar",
+  "language": "Swahili",
+  "title": "Zanzibar Spice Adventure",
+  "country": "Tanzania"
+ }
+]

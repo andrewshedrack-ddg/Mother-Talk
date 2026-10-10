@@ -99,7 +99,48 @@ body {
 .section-title { font-size: 1.4rem; margin: 0 0 0.4rem; padding-bottom: 0.4rem; border-bottom: 3px solid var(--gold); display: inline-block; }
 .section-sub { color: var(--muted); margin-bottom: 1rem; }
 
-/* Story cards */
+/* Region boxes: stories grouped by country */
+#region-boxes { display: grid; gap: 1.1rem; margin: 1rem 0 2.2rem; }
+.region-box {
+  background: var(--card); border: 1px solid var(--line);
+  border-top: 6px solid var(--green); border-radius: 16px; overflow: hidden;
+}
+.region-head { display: flex; align-items: center; gap: 0.8rem; padding: 1rem 1.2rem 0.6rem; }
+.region-head .flag { width: 34px; height: 23px; }
+.region-head h3 { font-size: 1.25rem; }
+.region-head span { font-family: Arial, sans-serif; font-size: 0.82rem; color: var(--muted); }
+.region-stories { padding: 0.4rem 1.2rem 1.2rem; display: grid; gap: 0.6rem; }
+.story-row {
+  display: flex; align-items: center; gap: 0.8rem; width: 100%;
+  font-family: Georgia, serif; text-align: left; cursor: pointer;
+  background: var(--sand); border: 2px solid var(--line); border-radius: 12px;
+  padding: 0.85rem 1rem; color: var(--ink);
+}
+.story-row:hover { border-color: var(--terra); background: #fff; }
+.story-row-main { flex: 1; display: flex; flex-direction: column; }
+.story-row-main strong { font-size: 1.02rem; }
+.story-row-main small { color: var(--muted); font-size: 0.85rem; }
+.story-row-go {
+  font-family: Arial, sans-serif; font-weight: bold; font-size: 1.2rem;
+  color: var(--terra); min-width: 2rem; text-align: center;
+}
+.story-row.is-done .story-row-go { color: var(--green); }
+
+/* Taste the languages */
+.taste-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); margin: 1rem 0 2.2rem; }
+.taste-card {
+  background: var(--espresso); border: none; border-radius: 14px; padding: 1.1rem 1rem;
+  cursor: pointer; color: #fff; display: flex; flex-direction: column; gap: 0.25rem;
+  text-align: center; transition: transform 0.15s;
+  box-shadow: 0 4px 0 #000;
+}
+.taste-card:active { transform: translateY(3px); box-shadow: none; }
+.taste-phrase { font-size: 1.35rem; color: var(--gold); }
+.taste-meaning { font-size: 0.9rem; color: #f3e6c8; font-style: italic; }
+.taste-lang { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font-family: Arial, sans-serif; font-size: 0.8rem; color: #c9b896; margin-top: 0.3rem; }
+
+/* Story cards (legacy, kept for reference) */
 .story-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin: 1rem 0 2.2rem; }
 .story-card {
   background: var(--card); border: 1px solid var(--line); border-top: 6px solid var(--terra);
@@ -232,10 +273,28 @@ body {
 .footer .small { font-size: 0.78rem; margin-top: 0.3rem; }
 
 @media (max-width: 520px) {
-  .hero { padding: 2.2rem 1rem; }
-  .hero h1 { font-size: 1.5rem; }
-  .native { font-size: 1.3rem; }
+  #app { padding: 0 0.9rem 2rem; }
+  .hero { padding: 2.4rem 1rem; margin: 1rem 0; }
+  .hero h1 { font-size: 1.55rem; }
+  .hero p { font-size: 0.98rem; }
+  .native { font-size: 1.35rem; }
   .brand-tag { display: none; }
   .tabs { top: 68px; }
+  .tab { font-size: 0.88rem; padding: 0.85rem 0.4rem; }
   .me-stats { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+  /* Bigger, roomier cards on phone */
+  .art-grid { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+  .art-card img { height: 130px; }
+  .story-row { padding: 1rem; }
+  .story-row-main strong { font-size: 1.08rem; }
+  .taste-grid { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+  .taste-phrase { font-size: 1.45rem; }
+  .swatch { width: 44px; height: 44px; }
+  .tool { font-size: 0.95rem; padding: 0.6rem 1rem; }
+  .toolbar { padding: 0.9rem; }
+  #paint-canvas { min-height: 300px; }
+  .cta { width: 100%; padding: 1rem; font-size: 1.1rem; }
+  .primary { width: 100%; padding: 0.95rem; }
+  .studio-actions { flex-direction: column; }
+  .choices button { font-size: 1.08rem; padding: 0.95rem 1rem; }
 }
