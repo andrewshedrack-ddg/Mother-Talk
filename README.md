@@ -1,56 +1,29 @@
-# Mother Talk - Vibrant African Art Linguo Platform
+# MotherTalk
 
-## Live at: https://andrewshedrack-ddg.github.io/Mother-Talk/
+A story-driven platform for learning indigenous African languages.
+DBIT Information Systems project by Andrew Shedrack Anderson (227177) and partner (227310).
 
-### ✨ **Now with Authentic African Art Aesthetic** ✨
+## Live demo
 
-Redesigned from a plain Duolingo-inspired look to a **vibrant, authentic African art platform** inspired by:
+https://andrewshedrack-ddg.github.io/Mother-Talk/
 
-- **TingaTinga paintings** - bold, vivid, high-gloss oils from Tanzania
-- **African Galleria** - vibrant gallery aesthetic with colorful collections
-- **CMB Artwrks** - bold patterns and vivid depictions of African life
-- **Traditional African color palettes** - rich earth tones + vibrant accents
-- **Kente, Adinkra, and tribal motifs** - authentic cultural patterns
+## How it works
 
-### Color Palette (Vibrant & Authentic)
-| Color | Hex | Inspiration |
-|-------|-----|-------------|
-| **Terracotta Red** | #E53935 | TingaTinga bold red-orange |
-| **Gold Accent** | #F9A825 | Warm gold highlights |
-| **Forest Green** | #2E7D32 | Deep African landscapes |
-| **Saffron Yellow** | #FFB300 | Bright traditional accents |
-| **Indigo** | #3F51B5 | Rich cultural depth |
-| **Sky Blue** | #0277BD | Vibrant sky motifs |
+- Pick a story, for example "Wanjiru's Market Day" in Kikuyu.
+- Read each scene, make choices that branch the story, hear pronunciation,
+  read culture notes, and answer quizzes to earn points.
+- Progress and points are saved in the browser.
 
-### Design Highlights
-- ✅ **Vibrant color palette** - 6 bold African-inspired colors
-- ✅ **TingaTinga style** - high-contrast, bold, vivid compositions
-- ✅ **Triangular patterns** - geometric motifs throughout
-- ✅ **Gold accent detailing** - throughout the UI
-- ✅ **Baloo 2 + Inter typography** - expressive sans + clean UI
-- ✅ **Smooth cubic-bezier transitions** - lively, engaging motion
-- ✅ **Layered rgba backgrounds** - depth and richness
-- ✅ **Responsive** - mobile-first, 320px to 1400px+
-- ✅ **Touch-friendly** - 44px minimum tap targets
-- ✅ **Accessibility** - focus-visible, reduced motion support
+## Project structure
 
-### 3 Vibrant Pages
+- `index.html`, `styles.css`, `app.js` — the static web app served by GitHub Pages.
+- `data/` — the story catalogue (`stories.json`) and story files. Stories are
+  plain JSON: scenes with native text, translations, choices, quizzes and culture notes.
+- `backend/` — the Flask version with user accounts and a database. It needs a
+  Python server (for example Render) and cannot run on GitHub Pages.
+- `frontend/` — a Vite and Tailwind experiment.
 
-1. **index.html** - Hero with gradient background, animated badge, CTA buttons with hover gradients
-2. **artifact.html** - Cultural artifacts gallery with card hover lift + rotate effects
-3. **coloring.html** - Coloring studio with 6-color palette grid, brush sizes, pattern previews
+## Adding a story
 
-### Files (6 total)
-- `index.html` - Vibrant landing page
-- `artifact.html` - Artifact gallery with linguistic significance
-- `coloring.html` - Coloring studio with pattern activities
-- `styles.css` - 22KB vibrant African art CSS
-- `script.js` - Interactivity (palette selection, brush, nav)
-- `README.md` - Project documentation
-
-### How to View
-- **GitHub Pages:** https://andrewshedrack-ddg.github.io/Mother-Talk/
-- **Local File:** `file:///C:/Users/user/Downloads/Mother%20Talk/index.html`
-- **Local Server:** `http://localhost:8080`
-
-The project was refreshed from a plain design to a **vibrant, authentic African art platform** that respects and celebrates African visual culture through color, pattern, and symbolic design elements.
+Add a JSON file under `data/` following the `wanjiru.json` format, then list it
+in `data/stories.json`. No backend changes needed.
