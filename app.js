@@ -88,13 +88,17 @@ document.querySelectorAll(".tab").forEach(t => {
 });
 
 /* ---------- taste the languages ---------- */
+/* Phrases taken from inside the stories, so learners hear the words
+ * the characters actually speak. */
 const TASTE = [
-  { phrase: "Wîmwega?", meaning: "How are you?", lang: "Kikuyu", flag: "ke" },
-  { phrase: "Nesa!", meaning: "Greetings!", lang: "Kamba", flag: "ke" },
-  { phrase: "Karibu!", meaning: "Welcome!", lang: "Swahili", flag: "ke" },
-  { phrase: "Misawa!", meaning: "Greetings!", lang: "Dholuo", flag: "ke" },
-  { phrase: "Oli otya?", meaning: "How are you?", lang: "Luganda", flag: "ug" },
-  { phrase: "Shikamoo!", meaning: "A respectful greeting", lang: "Swahili", flag: "tz" }
+  { phrase: "W\u0129mwega, m\u0169geni!", meaning: "How are you, visitor!", lang: "Kikuyu", flag: "ke", story: "Wanjiru\u2019s Market Day" },
+  { phrase: "T\u0169g\u0169r\u0129re matunda!", meaning: "Let\u2019s buy some fruits!", lang: "Kikuyu", flag: "ke", story: "Wanjiru\u2019s Market Day" },
+  { phrase: "\u00cemwe, il\u00ee, ithat\u00fb!", meaning: "One, two, three!", lang: "Kamba", flag: "ke", story: "Mutiso\u2019s Harvest Day" },
+  { phrase: "Karibu Zanzibar!", meaning: "Welcome to Zanzibar!", lang: "Swahili", flag: "tz", story: "Zanzibar Spice Adventure", code: "sw-KE" },
+  { phrase: "Hii ni karafuu.", meaning: "This is clove.", lang: "Swahili", flag: "tz", story: "Zanzibar Spice Adventure", code: "sw-KE" },
+  { phrase: "Cham rech!", meaning: "Eat fish!", lang: "Dholuo", flag: "ke", story: "Ochieng\u2019s Fishing Morning" },
+  { phrase: "Tugende akatale!", meaning: "Let\u2019s go to the market!", lang: "Luganda", flag: "ug", story: "Nakato\u2019s Kampala Market" },
+  { phrase: "Weeraba!", meaning: "Goodbye!", lang: "Luganda", flag: "ug", story: "Nakato\u2019s Kampala Market" }
 ];
 
 function renderTaste() {
@@ -107,8 +111,9 @@ function renderTaste() {
     card.innerHTML =
       '<span class="taste-phrase">' + escapeHtml(t.phrase) + "</span>" +
       '<span class="taste-meaning">' + escapeHtml(t.meaning) + "</span>" +
+      '<span class="taste-story">' + escapeHtml(t.story) + "</span>" +
       '<span class="taste-lang">' + flagImg(t.flag) + escapeHtml(t.lang) + "</span>";
-    card.addEventListener("click", () => speak(t.phrase));
+    card.addEventListener("click", () => speak(t.phrase, t.code));
     grid.appendChild(card);
   });
 }
@@ -161,6 +166,7 @@ async function startStory(meta) {
   const res = await fetch(meta.file);
   story = await res.json();
   story._flag = meta.flag || ""; story._language = meta.language || "";
+  story._code = (meta.language === "Swahili") ? "sw-KE" : null;
   runXP = 0; runCorrect = 0; runTotal = 0;
   sceneId = story.start;
   renderScene();
@@ -263,11 +269,23 @@ function finishStory() {
   show("view-done");
 }
 
-function speak(text) {
+/* Voice: uses the device speech engine. When a language code is known
+ * (Swahili today), it is set on the utterance so the device picks the
+ * closest matching voice. Real native-speaker recordings will replace
+ * this synthetic voice phrase by phrase. */
+function speak(text, lang) {
   if (!("speechSynthesis" in window)) { alert("Speech is not supported in this browser."); return; }
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.85;
+  if (lang) {
+    u.lang = lang;
+    try {
+      const vs = window.speechSynthesis.getVoices();
+      const v = vs.find(v => v.lang && v.lang.toLowerCase().indexOf(lang.slice(0, 2).toLowerCase()) === 0);
+      if (v) u.voice = v;
+    } catch (e) {}
+  }
+  u.rate = 0.9;
   window.speechSynthesis.speak(u);
 }
 
@@ -310,7 +328,7 @@ function renderComposite() {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, artW, artH);
   ctx.drawImage(paintCanvas, 0, 0);
-  ctx.drawImage(lineImg, 0, 0);
+  ctx.drawImage(lineImg, 0, 0, artW, artH);
 }
 
 function openStudio(art) {
@@ -325,7 +343,12 @@ function openStudio(art) {
   pctx = paintCanvas.getContext("2d");
   lineImg = new Image();
   lineImg.onload = () => {
-    artW = lineImg.naturalWidth; artH = lineImg.naturalHeight;
+    /* Work at most at 640px on the long edge: paint stays fast on phones
+     * and the line art is still drawn crisply at display size. */
+    const MAX = 640;
+    const k = Math.min(1, MAX / Math.max(lineImg.naturalWidth, lineImg.naturalHeight));
+    artW = Math.max(1, Math.round(lineImg.naturalWidth * k));
+    artH = Math.max(1, Math.round(lineImg.naturalHeight * k));
     canvas.width = artW; canvas.height = artH;
     paintCanvas.width = artW; paintCanvas.height = artH;
     undoStack = [];
@@ -369,36 +392,39 @@ function pushUndo() {
  * The fill runs on the visible composite, then only the changed pixels are
  * copied onto the paint layer (under the line art). */
 function floodFill(sx, sy) {
+  if (!artW || !artH) return;                       // image not ready yet
+  sx = Math.max(0, Math.min(artW - 1, sx | 0));
+  sy = Math.max(0, Math.min(artH - 1, sy | 0));
   const tol = 60;
   const comp = ctx.getImageData(0, 0, artW, artH);
-  const orig = new Uint8ClampedArray(comp.data);
   const d = comp.data;
   const si = (sy * artW + sx) * 4;
   const tr = d[si], tg = d[si+1], tb = d[si+2];
   const [fr, fg, fb] = hexToRgb(paintColor);
   if (Math.abs(tr-fr) < 10 && Math.abs(tg-fg) < 10 && Math.abs(tb-fb) < 10) return;
-  if (tr < 70 && tg < 70 && tb < 70) return; // tapped a line: do nothing
+  if (tr < 70 && tg < 70 && tb < 70) return;        // tapped a line: do nothing
   const seen = new Uint8Array(artW * artH);
-  const stack = [[sx, sy]];
+  const stack = [sx, sy];
+  const filled = [];
   const match = k => Math.abs(d[k]-tr) <= tol && Math.abs(d[k+1]-tg) <= tol && Math.abs(d[k+2]-tb) <= tol;
   while (stack.length) {
-    const [x, y] = stack.pop();
+    const y = stack.pop(), x = stack.pop();
     if (x < 0 || y < 0 || x >= artW || y >= artH) continue;
     const p = y * artW + x;
     if (seen[p]) continue;
     seen[p] = 1;
     const k = p * 4;
     if (!match(k)) continue;
-    d[k] = fr; d[k+1] = fg; d[k+2] = fb; d[k+3] = 255;
-    stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+    filled.push(k);
+    stack.push(x+1, y, x-1, y, x, y+1, x, y-1);
   }
+  if (!filled.length) return;
   pushUndo();
   const pimg = pctx.getImageData(0, 0, artW, artH);
   const pd = pimg.data;
-  for (let k = 0; k < d.length; k += 4) {
-    if (d[k] !== orig[k] || d[k+1] !== orig[k+1] || d[k+2] !== orig[k+2]) {
-      pd[k] = fr; pd[k+1] = fg; pd[k+2] = fb; pd[k+3] = 255;
-    }
+  for (let i = 0; i < filled.length; i++) {
+    const k = filled[i];
+    pd[k] = fr; pd[k+1] = fg; pd[k+2] = fb; pd[k+3] = 255;
   }
   pctx.putImageData(pimg, 0, 0);
   renderComposite();
@@ -415,6 +441,8 @@ function bindPaint() {
   canvas = document.getElementById("paint-canvas");
   const start = ev => {
     ev.preventDefault();
+    if (!artW || !artH) return;                     // image not ready yet
+    try { canvas.setPointerCapture(ev.pointerId); } catch (e) {}
     const [x, y] = canvasPos(ev);
     if (paintTool === "fill") { floodFill(x, y); return; }
     painting = true; pushUndo();
@@ -510,7 +538,7 @@ document.getElementById("btn-save-name").addEventListener("click", () => {
 
 /* ---------- static buttons ---------- */
 document.getElementById("btn-hear").addEventListener("click", () => {
-  const sc = currentScene(); if (sc && sc.native) speak(sc.native);
+  const sc = currentScene(); if (sc && sc.native) speak(sc.native, story._code);
 });
 document.getElementById("btn-quit").addEventListener("click", () => {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
