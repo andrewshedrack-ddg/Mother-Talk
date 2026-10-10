@@ -1,22 +1,25 @@
-/* MotherTalk static site — clean, mobile-first visual novel styling. */
+/* MotherTalk — African art theme.
+ * Palette: espresso, sand, terracotta, gold, green, red (Pan-African). */
 
 :root {
-  --bg: #faf7f2;
-  --card: #ffffff;
+  --espresso: #1c130c;
+  --sand: #f7f0e1;
+  --card: #fffdf7;
   --ink: #2b2118;
   --muted: #7a6a58;
-  --accent: #c2571b;
-  --accent-dark: #9c4213;
+  --terra: #c2571b;
+  --terra-dark: #96400f;
+  --gold: #d9a441;
   --green: #2e7d4f;
   --red: #b3362b;
-  --line: #e8ded1;
+  --line: #e5d7bd;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: Georgia, "Times New Roman", serif;
-  background: var(--bg);
+  background: var(--sand);
   color: var(--ink);
   line-height: 1.6;
   min-height: 100vh;
@@ -24,66 +27,118 @@ body {
   flex-direction: column;
 }
 
+/* Kente-style stripe divider */
+.kente {
+  height: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--red) 0 40px,
+    var(--gold) 40px 80px,
+    var(--green) 80px 120px,
+    var(--espresso) 120px 160px
+  );
+}
+
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.9rem 1.2rem;
-  background: var(--card);
-  border-bottom: 1px solid var(--line);
+  padding: 0.7rem 1.2rem;
+  background: var(--espresso);
+  color: #fff;
   position: sticky;
   top: 0;
+  z-index: 10;
 }
 
-.brand {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: var(--accent);
-  cursor: pointer;
-  letter-spacing: 0.5px;
-}
+.brand { display: flex; align-items: center; gap: 0.7rem; cursor: pointer; }
+.logo { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); }
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-name { font-size: 1.35rem; font-weight: bold; color: var(--gold); letter-spacing: 0.5px; }
+.brand-tag { font-size: 0.72rem; color: #c9b896; font-style: italic; }
 
 .points {
-  background: var(--ink);
-  color: #fff;
+  background: var(--gold);
+  color: var(--espresso);
   border-radius: 999px;
-  padding: 0.25rem 0.9rem;
+  padding: 0.3rem 1rem;
   font-size: 0.9rem;
+  font-weight: bold;
   font-family: Arial, sans-serif;
+  white-space: nowrap;
 }
 
-#app { flex: 1; max-width: 720px; width: 100%; margin: 0 auto; padding: 1.2rem; }
-
+#app { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 0 1.2rem 2rem; }
 .view[hidden] { display: none; }
 
-.hero { text-align: center; margin: 2rem 0 1.5rem; }
-.hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-.hero p { color: var(--muted); font-size: 1.05rem; }
+/* Hero */
+.hero {
+  margin: 1.4rem 0 2rem;
+  border-radius: 18px;
+  overflow: hidden;
+  background: url("img/hero-pattern.webp") center/cover;
+  position: relative;
+  text-align: center;
+  padding: 3.2rem 1.5rem;
+  color: #fff;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 12, 6, 0.62);
+}
+.hero > * { position: relative; }
+.hero h1 { font-size: 2rem; margin-bottom: 0.6rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.hero p { font-size: 1.05rem; color: #f3e6c8; max-width: 520px; margin: 0 auto 1.4rem; }
+
+.cta {
+  font-family: Arial, sans-serif;
+  background: var(--gold);
+  color: var(--espresso);
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 2.2rem;
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.cta:hover { background: #e7b95c; }
+
+.section-title {
+  font-size: 1.4rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 3px solid var(--gold);
+  display: inline-block;
+}
 
 .story-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  margin-bottom: 2.2rem;
 }
 
 .story-card {
   background: var(--card);
   border: 1px solid var(--line);
+  border-top: 6px solid var(--terra);
   border-radius: 12px;
   padding: 1.2rem;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
 }
-.story-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+.story-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(60, 35, 10, 0.15); }
 .story-card h3 { font-size: 1.2rem; margin-bottom: 0.3rem; }
 .story-card .lang {
   display: inline-block;
   font-family: Arial, sans-serif;
-  font-size: 0.75rem;
-  background: #f3e9d8;
-  color: var(--accent-dark);
+  font-size: 0.78rem;
+  background: var(--espresso);
+  color: var(--gold);
   border-radius: 999px;
-  padding: 0.15rem 0.7rem;
+  padding: 0.2rem 0.8rem;
   margin-bottom: 0.6rem;
 }
 .story-card p { color: var(--muted); font-size: 0.95rem; }
@@ -96,15 +151,39 @@ body {
   font-weight: bold;
 }
 
-.note { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 1.5rem; }
+.steps { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 1rem; }
+.step {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-align: center;
+}
+.step-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--terra);
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+}
+.step h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+.step p { color: var(--muted); font-size: 0.92rem; }
 
+.note { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 1.2rem; }
+
+/* Player */
 .back {
   background: none;
   border: none;
   color: var(--muted);
   font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 0.8rem;
+  margin: 1.2rem 0 0.8rem;
   font-family: Arial, sans-serif;
 }
 .back:hover { color: var(--ink); }
@@ -114,44 +193,57 @@ body {
   border: 1px solid var(--line);
   border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 4px 14px rgba(60, 35, 10, 0.08);
 }
 
-.scene-art {
-  height: 150px;
-  background: linear-gradient(135deg, #c2571b, #e8a54b 60%, #f3d9a4);
+.scene-head {
+  background: url("img/hero-pattern.webp") center/cover;
+  position: relative;
+  padding: 1rem 1.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-.scene-body { padding: 1.4rem; }
-
+.scene-head::before { content: ""; position: absolute; inset: 0; background: rgba(20, 12, 6, 0.55); }
+.scene-head > * { position: relative; }
 .character {
   font-family: Arial, sans-serif;
   font-weight: bold;
   font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--accent);
-  margin-bottom: 0.4rem;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+}
+.scene-lang {
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 0.2rem 0.8rem;
 }
 
+.scene-body { padding: 1.4rem; }
 .native { font-size: 1.5rem; margin-bottom: 0.6rem; }
 
 .hear {
   font-family: Arial, sans-serif;
-  background: #f3e9d8;
-  border: 1px solid var(--line);
+  background: var(--espresso);
+  color: var(--gold);
+  border: none;
   border-radius: 999px;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1.1rem;
   cursor: pointer;
   font-size: 0.9rem;
   margin-bottom: 0.8rem;
 }
-.hear:hover { background: #ecdcc2; }
+.hear:hover { background: #2e2013; }
 
 .translation { color: var(--muted); font-style: italic; margin-bottom: 0.8rem; }
 
 .culture {
-  background: #fbf6ec;
-  border-left: 4px solid var(--accent);
+  background: #fbf3df;
+  border-left: 4px solid var(--gold);
   padding: 0.7rem 1rem;
   font-size: 0.92rem;
   margin-bottom: 1rem;
@@ -162,7 +254,7 @@ body {
 .choices button {
   font-family: Georgia, serif;
   text-align: left;
-  background: var(--bg);
+  background: var(--sand);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.8rem 1rem;
@@ -170,13 +262,13 @@ body {
   cursor: pointer;
   color: var(--ink);
 }
-.choices button:hover { border-color: var(--accent); background: #fff; }
+.choices button:hover:not(:disabled) { border-color: var(--terra); background: #fff; }
 .choices button.correct { border-color: var(--green); background: #eaf5ee; }
 .choices button.wrong { border-color: var(--red); background: #fbeeea; }
-.choices button:disabled { cursor: default; opacity: 0.85; }
+.choices button:disabled { cursor: default; }
 
 .reply {
-  background: #f4efe6;
+  background: #f4ecda;
   border-radius: 10px;
   padding: 0.8rem 1rem;
   margin-top: 0.8rem;
@@ -188,7 +280,7 @@ body {
   font-family: Arial, sans-serif;
   display: inline-block;
   margin-top: 1rem;
-  background: var(--accent);
+  background: var(--terra);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -196,10 +288,10 @@ body {
   font-size: 1rem;
   cursor: pointer;
 }
-.primary:hover { background: var(--accent-dark); }
+.primary:hover { background: var(--terra-dark); }
 .primary[hidden] { display: none; }
 
-.quiz-card { padding: 1.6rem; }
+.quiz-card { padding: 1.6rem; margin-top: 1.2rem; }
 .quiz-card h2 { font-size: 1.3rem; margin-bottom: 1rem; }
 .quiz-progress {
   font-family: Arial, sans-serif;
@@ -208,26 +300,30 @@ body {
   margin-bottom: 0.8rem;
 }
 
-.done-card { padding: 2.5rem 1.6rem; text-align: center; }
+.done-card { padding: 2.5rem 1.6rem; text-align: center; margin-top: 1.2rem; }
+.done-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 1rem; }
 .done-card h2 { font-size: 1.6rem; margin-bottom: 0.6rem; }
 .points-earned {
   font-family: Arial, sans-serif;
   font-size: 1.2rem;
   font-weight: bold;
-  color: var(--accent);
+  color: var(--terra);
   margin: 0.8rem 0;
 }
 
 .footer {
   text-align: center;
-  padding: 1.2rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  border-top: 1px solid var(--line);
+  padding: 1.4rem 1rem;
+  background: var(--espresso);
+  color: #c9b896;
+  font-size: 0.9rem;
 }
+.footer strong { color: var(--gold); }
+.footer .small { font-size: 0.78rem; margin-top: 0.3rem; }
 
 @media (max-width: 520px) {
-  .hero h1 { font-size: 1.45rem; }
+  .hero { padding: 2.2rem 1rem; }
+  .hero h1 { font-size: 1.5rem; }
   .native { font-size: 1.3rem; }
-  #app { padding: 0.9rem; }
+  .brand-tag { display: none; }
 }

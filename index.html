@@ -5,34 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MotherTalk — Learn African Languages Through Stories</title>
 <meta name="description" content="A story-driven platform for learning indigenous African languages.">
+<link rel="icon" href="img/logo.webp">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <header class="topbar">
-  <div class="brand" id="brand-home">MotherTalk</div>
+  <div class="brand" id="brand-home">
+    <img src="img/logo.webp" alt="MotherTalk logo" class="logo">
+    <div class="brand-text">
+      <span class="brand-name">MotherTalk</span>
+      <span class="brand-tag">Your voice, your ideas, our journey</span>
+    </div>
+  </div>
   <div class="points" id="points-badge" title="Your learning points">0 pts</div>
 </header>
+<div class="kente" aria-hidden="true"></div>
 
 <main id="app">
 
-  <!-- HOME: story catalogue -->
+  <!-- HOME -->
   <section id="view-home" class="view">
     <div class="hero">
       <h1>Learn a language by living a story.</h1>
-      <p>Pick a story, meet its characters, hear real phrases, and test yourself as you go.</p>
+      <p>Step into African stories, speak real phrases, and carry the language with you.</p>
+      <button class="cta" id="btn-start">Start a story</button>
     </div>
+
+    <h2 class="section-title">Stories</h2>
     <div id="story-grid" class="story-grid"></div>
+
+    <h2 class="section-title">How it works</h2>
+    <div class="steps">
+      <div class="step"><span class="step-n">1</span><h3>Pick a story</h3><p>Choose a tale in the language you want to learn.</p></div>
+      <div class="step"><span class="step-n">2</span><h3>Speak and choose</h3><p>Read scenes, hear pronunciation, make choices that shape the tale.</p></div>
+      <div class="step"><span class="step-n">3</span><h3>Quiz and earn</h3><p>Answer quizzes, earn points, and track your progress.</p></div>
+    </div>
     <p class="note">Progress is saved on this device.</p>
   </section>
 
-  <!-- PLAYER: visual novel scene -->
+  <!-- PLAYER -->
   <section id="view-player" class="view" hidden>
     <button class="back" id="btn-quit">&larr; Stories</button>
     <div class="scene-card">
-      <div class="scene-art" id="scene-art"></div>
-      <div class="scene-body">
+      <div class="scene-head">
         <div class="character" id="scene-character"></div>
+        <div class="scene-lang" id="scene-lang"></div>
+      </div>
+      <div class="scene-body">
         <p class="native" id="scene-native"></p>
         <button class="hear" id="btn-hear">Hear pronunciation</button>
         <p class="translation" id="scene-translation"></p>
@@ -55,9 +75,10 @@
     </div>
   </section>
 
-  <!-- STORY COMPLETE -->
+  <!-- DONE -->
   <section id="view-done" class="view" hidden>
     <div class="done-card">
+      <img src="img/logo.webp" alt="" class="done-logo">
       <h2>Story complete!</h2>
       <p id="done-summary"></p>
       <p class="points-earned" id="done-points"></p>
@@ -67,8 +88,10 @@
 
 </main>
 
+<div class="kente" aria-hidden="true"></div>
 <footer class="footer">
-  <p>MotherTalk — your voice, your ideas, our journey.</p>
+  <p><strong>MotherTalk</strong> — your voice, your ideas, our journey.</p>
+  <p class="small">Built by Andrew Shedrack Anderson &amp; partner · DBIT Information Systems Project</p>
 </footer>
 
 <script src="app.js"></script>

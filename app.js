@@ -1,14 +1,12 @@
-/* MotherTalk story engine (static version).
+/* MotherTalk story engine.
  *
- * How it works:
- *  1. On load, fetch data/stories.json and render the story catalogue.
- *  2. When a story is picked, fetch its JSON file and walk through scenes.
- *  3. Each scene: show character line -> choices -> reply -> scene quizzes.
- *  4. Points and completed stories are kept in localStorage (this browser only).
- *  5. Pronunciation uses the browser's built-in speech synthesis (demo voice).
+ * Plain HTML + CSS + JavaScript, no frameworks. Data lives in data/*.json,
+ * progress lives in the browser's localStorage, pronunciation uses the
+ * browser's built-in speech synthesis. This whole app runs as static files,
+ * which is why it works on GitHub Pages.
  */
 
-// ---------- tiny storage helpers ----------
+// ---------- tiny storage helpers (localStorage only holds strings) ----------
 const store = {
   get(key, fallback) {
     try {
@@ -22,12 +20,12 @@ const store = {
 };
 
 // ---------- app state ----------
-let catalogue = [];
-let story = null;          // the loaded story JSON
-let sceneId = null;        // current scene key
-let pendingQuizzes = [];   // quizzes left in the current scene
+let catalogue = [];      // list of stories from data/stories.json
+let story = null;        // the loaded story object
+let sceneId = null;      // key of the current scene
+let pendingQuizzes = []; // quizzes left in the current scene
 let quizIndex = 0;
-let runPoints = 0;        // points earned in this story run
+let runPoints = 0;       // points earned during this story run
 let runCorrect = 0;
 let runTotal = 0;
 
@@ -38,13 +36,19 @@ function show(viewId) {
 }
 
 function refreshPoints() {
-  const pts = store.get("mt_points", 0);
-  document.getElementById("points-badge").textContent = pts + " pts";
+  document.getElementById("points-badge").textContent = store.get("mt_points", 0) + " pts";
 }
 
 function addPoints(n) {
   store.set("mt_points", store.get("mt_points", 0) + n);
   refreshPoints();
+}
+
+// Escape user-facing text so story JSON can never inject HTML.
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
 }
 
 // ---------- home: story catalogue ----------
@@ -58,7 +62,7 @@ async function loadCatalogue() {
     const card = document.createElement("div");
     card.className = "story-card";
     card.innerHTML =
-      "<span class='lang'>" + escapeHtml(s.language) + "</span>" +
+      "<span class='lang'>" + escapeHtml(s.flag || "") + " " + escapeHtml(s.language) + "</span>" +
       "<h3>" + escapeHtml(s.title) + "</h3>" +
       "<p>" + escapeHtml(s.description) + "</p>" +
       (done.includes(s.id) ? "<span class='done-tag'>Completed</span>" : "");
@@ -67,16 +71,12 @@ async function loadCatalogue() {
   });
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[c]));
-}
-
 // ---------- story player ----------
 async function startStory(meta) {
   const res = await fetch(meta.file);
   story = await res.json();
+  story._flag = meta.flag || "";
+  story._language = meta.language || "";
   runPoints = 0; runCorrect = 0; runTotal = 0;
   sceneId = story.start;
   renderScene();
@@ -88,20 +88,23 @@ function currentScene() { return story.scenes[sceneId]; }
 function renderScene() {
   const sc = currentScene();
   document.getElementById("scene-character").textContent = sc.character || "";
+  document.getElementById("scene-lang").textContent = (story._flag + " " + story._language).trim();
   document.getElementById("scene-native").textContent = sc.native || "";
   document.getElementById("scene-translation").textContent = sc.translation || "";
-  document.getElementById("scene-culture").textContent = sc.culture ? ("Culture note: " + sc.culture) : "";
-  document.getElementById("scene-culture").style.display = sc.culture ? "" : "none";
+  const cultureEl = document.getElementById("scene-culture");
+  cultureEl.textContent = sc.culture ? ("Culture note: " + sc.culture) : "";
+  cultureEl.style.display = sc.culture ? "" : "none";
 
   const replyBox = document.getElementById("reply-box");
-  replyBox.hidden = true; replyBox.textContent = "";
+  replyBox.hidden = true;
+  replyBox.textContent = "";
 
   const cont = document.getElementById("btn-continue");
-  cont.hidden = true; cont.onclick = null;
+  cont.hidden = true;
+  cont.onclick = null;
 
   const box = document.getElementById("choices");
   box.innerHTML = "";
-
   (sc.choices || []).forEach(choice => {
     const b = document.createElement("button");
     b.textContent = choice.label;
@@ -109,16 +112,15 @@ function renderScene() {
     box.appendChild(b);
   });
 
-  // Scene with no choices: go straight to its quizzes (or next scene).
-  if ((sc.choices || []).length === 0) {
-    afterSceneText(sc);
-  }
+  // A scene with no choices flows straight into its quizzes (or onward).
+  if ((sc.choices || []).length === 0) afterSceneText(sc);
 }
 
 function pickChoice(choice, btn) {
-  // Lock the choices so only one can be picked.
+  // Lock the choices so the learner picks exactly one.
   document.querySelectorAll("#choices button").forEach(b => { b.disabled = true; });
-  btn.style.borderColor = "var(--accent)";
+  btn.style.borderColor = "var(--terra)";
+  btn.style.background = "#fff";
 
   const replyBox = document.getElementById("reply-box");
   replyBox.textContent = choice.reply || "";
@@ -132,8 +134,7 @@ function pickChoice(choice, btn) {
   };
 }
 
-// After the scene text (and any reply), run this scene's quizzes,
-// then move on. Scenes are linked; the last scene ends the story.
+// After a scene's text (and any reply), run its quizzes, then move on.
 function afterSceneText(sc) {
   pendingQuizzes = (sc.quizzes || []).slice();
   quizIndex = 0;
@@ -146,7 +147,7 @@ function afterSceneText(sc) {
 }
 
 function advanceStory() {
-  // Find scenes in order; move to the one after the current, else finish.
+  // Scenes play in JSON order; the last one ends the story.
   const order = Object.keys(story.scenes);
   const i = order.indexOf(sceneId);
   if (i >= 0 && i < order.length - 1) {
@@ -167,9 +168,11 @@ function renderQuiz() {
   document.getElementById("quiz-question").textContent = q.question;
 
   const fb = document.getElementById("quiz-feedback");
-  fb.hidden = true; fb.textContent = "";
+  fb.hidden = true;
+  fb.textContent = "";
   const next = document.getElementById("btn-quiz-next");
-  next.hidden = true; next.onclick = null;
+  next.hidden = true;
+  next.onclick = null;
 
   const box = document.getElementById("quiz-options");
   box.innerHTML = "";
@@ -183,25 +186,26 @@ function renderQuiz() {
 
 function answerQuiz(q, idx, btn) {
   document.querySelectorAll("#quiz-options button").forEach(b => { b.disabled = true; });
-  const fb = document.getElementById("quiz-feedback");
   const correct = idx === q.answer;
   btn.classList.add(correct ? "correct" : "wrong");
-  if (!correct) {
-    document.querySelectorAll("#quiz-options button")[q.answer].classList.add("correct");
-  } else {
+  if (correct) {
     runCorrect++;
     runPoints += 10;
     addPoints(10);
+  } else {
+    // Reveal the right answer so the learner still learns it.
+    document.querySelectorAll("#quiz-options button")[q.answer].classList.add("correct");
   }
-  fb.textContent = correct ? "Correct! +10 points." : "Not quite. The highlighted answer is correct.";
+  const fb = document.getElementById("quiz-feedback");
+  fb.textContent = correct ? "Correct! +10 points." : "Not quite — the highlighted answer is correct.";
   fb.hidden = false;
 
   const next = document.getElementById("btn-quiz-next");
   next.hidden = false;
   next.onclick = () => {
     quizIndex++;
-    if (quizIndex < pendingQuizzes.length) { renderQuiz(); }
-    else { advanceStory(); }
+    if (quizIndex < pendingQuizzes.length) renderQuiz();
+    else advanceStory();
   };
 }
 
@@ -211,8 +215,8 @@ function finishStory() {
   if (!done.includes(story.id)) {
     done.push(story.id);
     store.set("mt_done", done);
-    addPoints(20); // completion bonus
-    runPoints += 20;
+    runPoints += 20; // completion bonus
+    addPoints(20);
   }
   document.getElementById("done-summary").textContent =
     "You finished \"" + story.title + "\" — " + runCorrect + " of " + runTotal + " quiz answers correct.";
@@ -220,7 +224,7 @@ function finishStory() {
   show("view-done");
 }
 
-// ---------- pronunciation (browser demo voice) ----------
+// ---------- pronunciation via the browser's demo voice ----------
 function speak(text) {
   if (!("speechSynthesis" in window)) {
     alert("Speech is not supported in this browser.");
@@ -228,25 +232,27 @@ function speak(text) {
   }
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.85; // slower so learners can follow
+  u.rate = 0.85; // slower so learners can follow along
   window.speechSynthesis.speak(u);
 }
 
-// ---------- wire up static buttons ----------
+// ---------- static buttons ----------
 document.getElementById("btn-hear").addEventListener("click", () => {
   const sc = currentScene();
   if (sc && sc.native) speak(sc.native);
 });
-document.getElementById("btn-quit").addEventListener("click", () => {
-  window.speechSynthesis && window.speechSynthesis.cancel();
-  loadCatalogue(); show("view-home");
+document.getElementById("btn-quit").addEventListener("click", quitToHome);
+document.getElementById("btn-done-home").addEventListener("click", quitToHome);
+document.getElementById("brand-home").addEventListener("click", quitToHome);
+document.getElementById("btn-start").addEventListener("click", () => {
+  document.getElementById("story-grid").scrollIntoView({ behavior: "smooth" });
 });
-document.getElementById("btn-done-home").addEventListener("click", () => {
-  loadCatalogue(); show("view-home");
-});
-document.getElementById("brand-home").addEventListener("click", () => {
-  loadCatalogue(); show("view-home");
-});
+
+function quitToHome() {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  loadCatalogue();
+  show("view-home");
+}
 
 // ---------- boot ----------
 refreshPoints();
