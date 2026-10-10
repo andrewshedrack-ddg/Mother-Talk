@@ -87,6 +87,32 @@ document.querySelectorAll(".tab").forEach(t => {
   t.addEventListener("click", () => show(t.dataset.view));
 });
 
+/* ---------- taste the languages ---------- */
+const TASTE = [
+  { phrase: "Wîmwega?", meaning: "How are you?", lang: "Kikuyu", flag: "ke" },
+  { phrase: "Nesa!", meaning: "Greetings!", lang: "Kamba", flag: "ke" },
+  { phrase: "Karibu!", meaning: "Welcome!", lang: "Swahili", flag: "ke" },
+  { phrase: "Misawa!", meaning: "Greetings!", lang: "Dholuo", flag: "ke" },
+  { phrase: "Oli otya?", meaning: "How are you?", lang: "Luganda", flag: "ug" },
+  { phrase: "Shikamoo!", meaning: "A respectful greeting", lang: "Swahili", flag: "tz" }
+];
+
+function renderTaste() {
+  const grid = document.getElementById("taste-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  TASTE.forEach(t => {
+    const card = document.createElement("button");
+    card.className = "taste-card";
+    card.innerHTML =
+      '<span class="taste-phrase">' + escapeHtml(t.phrase) + "</span>" +
+      '<span class="taste-meaning">' + escapeHtml(t.meaning) + "</span>" +
+      '<span class="taste-lang">' + flagImg(t.flag) + escapeHtml(t.lang) + "</span>";
+    card.addEventListener("click", () => speak(t.phrase));
+    grid.appendChild(card);
+  });
+}
+
 /* ---------- flags (real images: emoji flags break on Windows) ---------- */
 function flagImg(code, cls) {
   return '<img class="flag ' + (cls || "") + '" src="https://flagcdn.com/w40/' +
@@ -97,22 +123,37 @@ function flagImg(code, cls) {
 let catalogue = [], story = null, sceneId = null;
 let pendingQuizzes = [], quizIndex = 0, runXP = 0, runCorrect = 0, runTotal = 0;
 
+const REGION_ORDER = ["Kenya", "Uganda", "Tanzania"];
+
 async function loadCatalogue() {
   const res = await fetch("data/stories.json");
   catalogue = await res.json();
   const done = store.get("mt_done", []);
-  const grid = document.getElementById("story-grid");
-  grid.innerHTML = "";
-  catalogue.forEach(s => {
-    const card = document.createElement("div");
-    card.className = "story-card";
-    card.innerHTML =
-      '<span class="lang">' + flagImg(s.flag) + escapeHtml(s.language) + "</span>" +
-      "<h3>" + escapeHtml(s.title) + "</h3>" +
-      "<p>" + escapeHtml(s.description) + "</p>" +
-      (done.includes(s.id) ? '<span class="done-tag">Completed</span>' : "");
-    card.addEventListener("click", () => startStory(s));
-    grid.appendChild(card);
+  const wrap = document.getElementById("region-boxes");
+  wrap.innerHTML = "";
+  REGION_ORDER.forEach(country => {
+    const stories = catalogue.filter(s => s.country === country);
+    if (!stories.length) return;
+    const box = document.createElement("div");
+    box.className = "region-box";
+    const doneCount = stories.filter(s => done.includes(s.id)).length;
+    box.innerHTML =
+      '<div class="region-head">' + flagImg(stories[0].flag) +
+      "<div><h3>" + escapeHtml(country) + "</h3><span>" +
+      stories.length + " stories · " + doneCount + " completed</span></div></div>" +
+      '<div class="region-stories"></div>';
+    const list = box.querySelector(".region-stories");
+    stories.forEach(s => {
+      const row = document.createElement("button");
+      row.className = "story-row" + (done.includes(s.id) ? " is-done" : "");
+      row.innerHTML =
+        '<span class="story-row-main"><strong>' + escapeHtml(s.title) + "</strong>" +
+        "<small>" + escapeHtml(s.language) + " · " + escapeHtml(s.description) + "</small></span>" +
+        '<span class="story-row-go">' + (done.includes(s.id) ? "&#10003;" : "&rarr;") + "</span>";
+      row.addEventListener("click", () => startStory(s));
+      list.appendChild(row);
+    });
+    wrap.appendChild(box);
   });
 }
 
@@ -231,13 +272,20 @@ function speak(text) {
 }
 
 /* ---------- colouring studio ---------- */
-const PALETTE = ["#c2571b","#d9a441","#2e7d4f","#b3362b","#1c130c","#f7f0e1","#3a86c8","#7b4b9e","#d96a8b","#ffffff"];
+const PALETTE = ["#c2571b","#e8734a","#d9a441","#f2d06b","#2e7d4f","#7bc47f",
+  "#b3362b","#e86a5e","#1c130c","#6b5a44","#3a86c8","#7fb3e0",
+  "#7b4b9e","#b48ad6","#d96a8b","#f4a9c4","#f7f0e1","#ffffff"];
 let paintColor = PALETTE[0], paintTool = "fill", brushSize = 10;
 let canvas, ctx, paintCanvas, pctx, lineImg;
 let undoStack = [], artW = 0, artH = 0, currentArtId = null, painting = false;
 
-function allArts() { return (typeof COLORING_ARTS_A !== "undefined" ? COLORING_ARTS_A : [])
-  .concat(typeof COLORING_ARTS_B !== "undefined" ? COLORING_ARTS_B : []); }
+function allArts() {
+  const A = (typeof COLORING_ARTS_A !== "undefined" ? COLORING_ARTS_A : []);
+  const B = (typeof COLORING_ARTS_B !== "undefined" ? COLORING_ARTS_B : []);
+  const C = (typeof COLORING_ARTS_C !== "undefined" ? COLORING_ARTS_C : []);
+  const D = (typeof COLORING_ARTS_D !== "undefined" ? COLORING_ARTS_D : []);
+  return A.concat(B).concat(C).concat(D);
+}
 
 function renderArtGallery() {
   const colored = store.get("mt_colored", []);
@@ -470,7 +518,7 @@ document.getElementById("btn-quit").addEventListener("click", () => {
 document.getElementById("btn-done-home").addEventListener("click", () => show("view-home"));
 document.getElementById("brand-home").addEventListener("click", () => show("view-home"));
 document.getElementById("btn-start").addEventListener("click", () => {
-  document.getElementById("story-grid").scrollIntoView({ behavior: "smooth" });
+  document.getElementById("region-boxes").scrollIntoView({ behavior: "smooth" });
 });
 
 /* ---------- boot ---------- */
@@ -479,6 +527,7 @@ document.getElementById("btn-start").addEventListener("click", () => {
   refreshBadges();
   renderGoal();
   loadCatalogue();
+  renderTaste();
   bindPaint();
   // Logo + modal logo use the embedded data URI from the previous build step.
   const li = document.getElementById("logo-img");
