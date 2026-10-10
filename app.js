@@ -272,9 +272,10 @@ function speak(text) {
 }
 
 /* ---------- colouring studio ---------- */
-const PALETTE = ["#c2571b","#e8734a","#d9a441","#f2d06b","#2e7d4f","#7bc47f",
-  "#b3362b","#e86a5e","#1c130c","#6b5a44","#3a86c8","#7fb3e0",
-  "#7b4b9e","#b48ad6","#d96a8b","#f4a9c4","#f7f0e1","#ffffff"];
+const PALETTE = ["#c2571b","#e8734a","#9b2226","#b3362b","#e86a5e","#ee9b00",
+  "#d9a441","#ffd23f","#2e7d4f","#7bc47f","#94d2bd","#0f4c5c",
+  "#3a86c8","#7fb3e0","#7b4b9e","#b48ad6","#d96a8b","#f4a9c4",
+  "#f2d06b","#e9d8a6","#6b5a44","#1c130c","#f7f0e1","#ffffff"];
 let paintColor = PALETTE[0], paintTool = "fill", brushSize = 10;
 let canvas, ctx, paintCanvas, pctx, lineImg;
 let undoStack = [], artW = 0, artH = 0, currentArtId = null, painting = false;
