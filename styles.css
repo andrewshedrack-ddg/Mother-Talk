@@ -153,6 +153,7 @@ body {
 .taste-card:active { transform: translateY(3px); box-shadow: none; }
 .taste-phrase { font-size: 1.35rem; color: var(--gold); }
 .taste-meaning { font-size: 0.9rem; color: #f3e6c8; font-style: italic; }
+.taste-story { font-family: Arial, sans-serif; font-size: 0.75rem; color: #b39a67; }
 .taste-lang { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
   font-family: Arial, sans-serif; font-size: 0.8rem; color: #c9b896; margin-top: 0.3rem; }
 
