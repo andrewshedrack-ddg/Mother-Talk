@@ -42,7 +42,7 @@
         <div><strong>6</strong><span>stories</span></div>
         <div><strong>5</strong><span>languages</span></div>
         <div><strong>3</strong><span>countries</span></div>
-        <div><strong>6</strong><span>artworks</span></div>
+        <div><strong>30</strong><span>artworks</span></div>
       </div>
     </div>
 
@@ -85,8 +85,15 @@
       <button class="back" id="btn-studio-back">&larr; Gallery</button>
       <h2 class="section-title" id="studio-title"></h2>
       <div class="toolbar">
-        <p class="palette-label">Pick a colour</p>
-        <div id="palette" class="palette"></div>
+        <p class="palette-label">Pick a colour from the wheel</p>
+        <div class="wheel-row">
+          <canvas id="color-wheel" width="200" height="200"></canvas>
+          <div class="wheel-controls">
+            <div id="color-preview" class="color-preview"></div>
+            <label class="wheel-label">Lightness <input type="range" id="lightness" min="12" max="100" value="55"></label>
+            <span id="color-hex" class="color-hex">#c2571b</span>
+          </div>
+        </div>
         <div class="tools">
           <button id="tool-fill" class="tool active">Fill</button>
           <button id="tool-brush" class="tool">Brush</button>
@@ -188,6 +195,18 @@
 <script src="coloring-art-2.js"></script>
 <script src="coloring-art-3a.js"></script>
 <script src="coloring-art-3b.js"></script>
+<script src="coloring-art-4a.js"></script>
+<script src="coloring-art-4b.js"></script>
+<script src="coloring-art-4c.js"></script>
+<script src="coloring-art-4d.js"></script>
+<script src="coloring-art-4e.js"></script>
+<script src="coloring-art-4f.js"></script>
+<script src="coloring-art-4g.js"></script>
+<script src="coloring-art-4h.js"></script>
+<script src="coloring-art-4i.js"></script>
+<script src="coloring-art-4j.js"></script>
+<script src="coloring-art-4k.js"></script>
+<script src="coloring-art-4l.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
