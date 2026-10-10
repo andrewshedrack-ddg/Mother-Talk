@@ -303,7 +303,19 @@ function allArts() {
   const B = (typeof COLORING_ARTS_B !== "undefined" ? COLORING_ARTS_B : []);
   const C = (typeof COLORING_ARTS_C !== "undefined" ? COLORING_ARTS_C : []);
   const D = (typeof COLORING_ARTS_D !== "undefined" ? COLORING_ARTS_D : []);
-  return A.concat(B).concat(C).concat(D);
+  const E = (typeof COLORING_ARTS_E !== "undefined" ? COLORING_ARTS_E : []);
+  const F = (typeof COLORING_ARTS_F !== "undefined" ? COLORING_ARTS_F : []);
+  const G = (typeof COLORING_ARTS_G !== "undefined" ? COLORING_ARTS_G : []);
+  const H = (typeof COLORING_ARTS_H !== "undefined" ? COLORING_ARTS_H : []);
+  const I = (typeof COLORING_ARTS_I !== "undefined" ? COLORING_ARTS_I : []);
+  const J = (typeof COLORING_ARTS_J !== "undefined" ? COLORING_ARTS_J : []);
+  const K = (typeof COLORING_ARTS_K !== "undefined" ? COLORING_ARTS_K : []);
+  const L = (typeof COLORING_ARTS_L !== "undefined" ? COLORING_ARTS_L : []);
+  const M = (typeof COLORING_ARTS_M !== "undefined" ? COLORING_ARTS_M : []);
+  const N = (typeof COLORING_ARTS_N !== "undefined" ? COLORING_ARTS_N : []);
+  const O = (typeof COLORING_ARTS_O !== "undefined" ? COLORING_ARTS_O : []);
+  const P = (typeof COLORING_ARTS_P !== "undefined" ? COLORING_ARTS_P : []);
+  return A.concat(B).concat(C).concat(D).concat(E).concat(F).concat(G).concat(H).concat(I).concat(J).concat(K).concat(L).concat(M).concat(N).concat(O).concat(P);
 }
 
 function renderArtGallery() {
@@ -336,7 +348,7 @@ function openStudio(art) {
   document.getElementById("art-gallery").hidden = true;
   document.getElementById("studio").hidden = false;
   document.getElementById("studio-title").textContent = art.title;
-  buildPalette();
+  buildColorWheel();
   canvas = document.getElementById("paint-canvas");
   ctx = canvas.getContext("2d");
   paintCanvas = document.createElement("canvas");
@@ -360,20 +372,63 @@ function openStudio(art) {
   document.getElementById("studio").hidden = false;
 }
 
-function buildPalette() {
-  const p = document.getElementById("palette");
-  p.innerHTML = "";
-  PALETTE.forEach(c => {
-    const s = document.createElement("div");
-    s.className = "swatch" + (c === paintColor ? " active" : "");
-    s.style.background = c; s.title = c;
-    s.addEventListener("click", () => {
-      paintColor = c;
-      p.querySelectorAll(".swatch").forEach(x => x.classList.remove("active"));
-      s.classList.add("active");
-    });
-    p.appendChild(s);
+/* Colour wheel: any hue and saturation, plus a lightness slider.
+ * Replaces the old fixed swatches. */
+let wheelLight = 0.55, lastHue = 14, lastSat = 0.72;
+function hsvToRgb(h, s, v) {
+  h = ((h % 360) + 360) % 360;
+  const c = v * s, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = v - c;
+  let r, g, b;
+  if (h < 60) { r = c; g = x; b = 0; }
+  else if (h < 120) { r = x; g = c; b = 0; }
+  else if (h < 180) { r = 0; g = c; b = x; }
+  else if (h < 240) { r = 0; g = x; b = c; }
+  else if (h < 300) { r = x; g = 0; b = c; }
+  else { r = c; g = 0; b = x; }
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+}
+function setPaintColor(h, s) {
+  lastHue = h; lastSat = s;
+  const [r, g, b] = hsvToRgb(h, s, wheelLight);
+  paintColor = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+  const pv = document.getElementById("color-preview");
+  if (pv) pv.style.background = paintColor;
+  const hx = document.getElementById("color-hex");
+  if (hx) hx.textContent = paintColor;
+}
+function buildColorWheel() {
+  const wheel = document.getElementById("color-wheel");
+  if (!wheel || wheel.dataset.built) return;
+  wheel.dataset.built = "1";
+  const S = wheel.width, wctx = wheel.getContext("2d");
+  const img = wctx.createImageData(S, S);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    const dx = x - S / 2 + 0.5, dy = y - S / 2 + 0.5;
+    const rr = Math.sqrt(dx * dx + dy * dy) / (S / 2);
+    const k = (y * S + x) * 4;
+    if (rr > 1) { img.data[k + 3] = 0; continue; }
+    let h = Math.atan2(dy, dx) * 180 / Math.PI; if (h < 0) h += 360;
+    const [r, g, b] = hsvToRgb(h, Math.min(1, rr), 1);
+    img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = 255;
+  }
+  wctx.putImageData(img, 0, 0);
+  const pick = ev => {
+    ev.preventDefault();
+    const rect = wheel.getBoundingClientRect();
+    const cx = (ev.clientX - rect.left) / rect.width * S - S / 2;
+    const cy = (ev.clientY - rect.top) / rect.height * S - S / 2;
+    if (Math.sqrt(cx * cx + cy * cy) / (S / 2) > 1) return;
+    let h = Math.atan2(cy, cx) * 180 / Math.PI; if (h < 0) h += 360;
+    setPaintColor(h, Math.min(1, Math.sqrt(cx * cx + cy * cy) / (S / 2)));
+  };
+  wheel.addEventListener("pointerdown", pick);
+  wheel.addEventListener("pointermove", ev => { if (ev.buttons) pick(ev); });
+  const li = document.getElementById("lightness");
+  if (li) li.addEventListener("input", ev => {
+    wheelLight = ev.target.value / 100;
+    setPaintColor(lastHue, lastSat);
   });
+  setPaintColor(lastHue, lastSat);
 }
 
 function hexToRgb(hex) {
