@@ -6,7 +6,12 @@
 /* ---------- storage ---------- */
 const store = {
   get(key, fallback) {
-    try { const raw = localStorage.getItem(key); return raw === null ? fallback : JSON.parse(raw); }
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) return fallback;
+      const v = JSON.parse(raw);
+      return (v === null || v === undefined) ? fallback : v;
+    }
     catch (e) { return fallback; }
   },
   set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
@@ -350,6 +355,7 @@ function openStudio(art) {
   document.getElementById("studio-title").textContent = art.title;
   buildColorWheel();
   canvas = document.getElementById("paint-canvas");
+  bindPaint();
   ctx = canvas.getContext("2d");
   paintCanvas = document.createElement("canvas");
   pctx = paintCanvas.getContext("2d");
@@ -494,6 +500,8 @@ function canvasPos(ev) {
 
 function bindPaint() {
   canvas = document.getElementById("paint-canvas");
+  if (!canvas || canvas.dataset.bound) return;
+  canvas.dataset.bound = "1";
   const start = ev => {
     ev.preventDefault();
     if (!artW || !artH) return;                     // image not ready yet
@@ -607,12 +615,12 @@ document.getElementById("btn-start").addEventListener("click", () => {
 
 /* ---------- boot ---------- */
 (function boot() {
-  updateStreak();
-  refreshBadges();
-  renderGoal();
-  loadCatalogue();
-  renderTaste();
-  bindPaint();
+  try { updateStreak(); } catch (e) {}
+  try { refreshBadges(); } catch (e) {}
+  try { renderGoal(); } catch (e) {}
+  try { loadCatalogue(); } catch (e) {}
+  try { renderTaste(); } catch (e) {}
+  try { bindPaint(); } catch (e) {}
   // Logo + modal logo use the embedded data URI from the previous build step.
   const li = document.getElementById("logo-img");
   if (li && !li.src) li.src = LOGO_URI;
