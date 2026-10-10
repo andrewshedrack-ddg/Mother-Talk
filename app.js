@@ -233,7 +233,8 @@ function speak(text) {
 /* ---------- colouring studio ---------- */
 const PALETTE = ["#c2571b","#d9a441","#2e7d4f","#b3362b","#1c130c","#f7f0e1","#3a86c8","#7b4b9e","#d96a8b","#ffffff"];
 let paintColor = PALETTE[0], paintTool = "fill", brushSize = 10;
-let canvas, ctx, undoStack = [], artW = 0, artH = 0, currentArtId = null, painting = false;
+let canvas, ctx, paintCanvas, pctx, lineImg;
+let undoStack = [], artW = 0, artH = 0, currentArtId = null, painting = false;
 
 function allArts() { return (typeof COLORING_ARTS_A !== "undefined" ? COLORING_ARTS_A : [])
   .concat(typeof COLORING_ARTS_B !== "undefined" ? COLORING_ARTS_B : []); }
@@ -253,6 +254,16 @@ function renderArtGallery() {
   });
 }
 
+/* Layered painting (the constraint): the user's paint lives on a separate
+ * layer UNDER the black line art. Outlines are always drawn on top, so colour
+ * can never cover them and paint always looks like it stays inside the lines. */
+function renderComposite() {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, artW, artH);
+  ctx.drawImage(paintCanvas, 0, 0);
+  ctx.drawImage(lineImg, 0, 0);
+}
+
 function openStudio(art) {
   currentArtId = art.id;
   document.getElementById("art-gallery").hidden = true;
@@ -261,15 +272,17 @@ function openStudio(art) {
   buildPalette();
   canvas = document.getElementById("paint-canvas");
   ctx = canvas.getContext("2d");
-  const img = new Image();
-  img.onload = () => {
-    artW = img.naturalWidth; artH = img.naturalHeight;
+  paintCanvas = document.createElement("canvas");
+  pctx = paintCanvas.getContext("2d");
+  lineImg = new Image();
+  lineImg.onload = () => {
+    artW = lineImg.naturalWidth; artH = lineImg.naturalHeight;
     canvas.width = artW; canvas.height = artH;
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, artW, artH);
-    ctx.drawImage(img, 0, 0);
+    paintCanvas.width = artW; paintCanvas.height = artH;
     undoStack = [];
+    renderComposite();
   };
-  img.src = art.src;
+  lineImg.src = art.src;
   show("view-color");
   document.getElementById("art-gallery").hidden = true;
   document.getElementById("studio").hidden = false;
@@ -298,38 +311,48 @@ function hexToRgb(hex) {
 
 function pushUndo() {
   try {
-    undoStack.push(ctx.getImageData(0, 0, artW, artH));
+    undoStack.push(pctx.getImageData(0, 0, artW, artH));
     if (undoStack.length > 15) undoStack.shift();
   } catch (e) {}
 }
 
-/* Tap-to-fill: flood fill from the tapped pixel, stopping at dark lines. */
+/* Tap-to-fill: flood fill from the tapped pixel, stopping at dark lines.
+ * The fill runs on the visible composite, then only the changed pixels are
+ * copied onto the paint layer (under the line art). */
 function floodFill(sx, sy) {
   const tol = 60;
-  const img = ctx.getImageData(0, 0, artW, artH);
-  const d = img.data;
+  const comp = ctx.getImageData(0, 0, artW, artH);
+  const orig = new Uint8ClampedArray(comp.data);
+  const d = comp.data;
   const si = (sy * artW + sx) * 4;
   const tr = d[si], tg = d[si+1], tb = d[si+2];
   const [fr, fg, fb] = hexToRgb(paintColor);
   if (Math.abs(tr-fr) < 10 && Math.abs(tg-fg) < 10 && Math.abs(tb-fb) < 10) return;
-  // Do not start on a dark outline pixel.
-  if (tr < 70 && tg < 70 && tb < 70) return;
+  if (tr < 70 && tg < 70 && tb < 70) return; // tapped a line: do nothing
   const seen = new Uint8Array(artW * artH);
   const stack = [[sx, sy]];
-  const match = i => Math.abs(d[i]-tr) <= tol && Math.abs(d[i+1]-tg) <= tol && Math.abs(d[i+2]-tb) <= tol;
-  pushUndo();
+  const match = k => Math.abs(d[k]-tr) <= tol && Math.abs(d[k+1]-tg) <= tol && Math.abs(d[k+2]-tb) <= tol;
   while (stack.length) {
     const [x, y] = stack.pop();
     if (x < 0 || y < 0 || x >= artW || y >= artH) continue;
     const p = y * artW + x;
     if (seen[p]) continue;
     seen[p] = 1;
-    const i = p * 4;
-    if (!match(i)) continue;
-    d[i] = fr; d[i+1] = fg; d[i+2] = fb; d[i+3] = 255;
+    const k = p * 4;
+    if (!match(k)) continue;
+    d[k] = fr; d[k+1] = fg; d[k+2] = fb; d[k+3] = 255;
     stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
   }
-  ctx.putImageData(img, 0, 0);
+  pushUndo();
+  const pimg = pctx.getImageData(0, 0, artW, artH);
+  const pd = pimg.data;
+  for (let k = 0; k < d.length; k += 4) {
+    if (d[k] !== orig[k] || d[k+1] !== orig[k+1] || d[k+2] !== orig[k+2]) {
+      pd[k] = fr; pd[k+1] = fg; pd[k+2] = fb; pd[k+3] = 255;
+    }
+  }
+  pctx.putImageData(pimg, 0, 0);
+  renderComposite();
 }
 
 function canvasPos(ev) {
@@ -346,15 +369,17 @@ function bindPaint() {
     const [x, y] = canvasPos(ev);
     if (paintTool === "fill") { floodFill(x, y); return; }
     painting = true; pushUndo();
-    ctx.strokeStyle = paintColor; ctx.fillStyle = paintColor;
-    ctx.lineWidth = brushSize; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 0.1, y + 0.1); ctx.stroke();
+    pctx.strokeStyle = paintColor; pctx.fillStyle = paintColor;
+    pctx.lineWidth = brushSize; pctx.lineCap = "round"; pctx.lineJoin = "round";
+    pctx.beginPath(); pctx.moveTo(x, y); pctx.lineTo(x + 0.1, y + 0.1); pctx.stroke();
+    renderComposite();
   };
   const move = ev => {
     if (!painting || paintTool !== "brush") return;
     ev.preventDefault();
     const [x, y] = canvasPos(ev);
-    ctx.lineTo(x, y); ctx.stroke();
+    pctx.lineTo(x, y); pctx.stroke();
+    renderComposite();
   };
   const end = () => { painting = false; };
   canvas.addEventListener("pointerdown", start);
@@ -375,13 +400,12 @@ document.getElementById("tool-brush").addEventListener("click", e => {
 document.getElementById("brush-size").addEventListener("input", e => { brushSize = +e.target.value; });
 document.getElementById("btn-undo").addEventListener("click", () => {
   const prev = undoStack.pop();
-  if (prev) ctx.putImageData(prev, 0, 0);
+  if (prev) { pctx.putImageData(prev, 0, 0); renderComposite(); }
 });
 document.getElementById("btn-clear").addEventListener("click", () => {
   pushUndo();
-  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, artW, artH);
-  const art = allArts().find(a => a.id === currentArtId);
-  if (art) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = art.src; }
+  pctx.clearRect(0, 0, artW, artH);
+  renderComposite();
 });
 document.getElementById("btn-studio-back").addEventListener("click", () => {
   document.getElementById("studio").hidden = true;
