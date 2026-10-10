@@ -99,6 +99,22 @@ body {
 .section-title { font-size: 1.4rem; margin: 0 0 0.4rem; padding-bottom: 0.4rem; border-bottom: 3px solid var(--gold); display: inline-block; }
 .section-sub { color: var(--muted); margin-bottom: 1rem; }
 
+/* Hero stats */
+.hero-stats { display: flex; gap: 1.6rem; justify-content: center; margin-top: 1.4rem; flex-wrap: wrap; }
+.hero-stats div { display: flex; flex-direction: column; align-items: center; }
+.hero-stats strong { font-size: 1.7rem; color: var(--gold); }
+.hero-stats span { font-family: Arial, sans-serif; font-size: 0.8rem; color: #e8d9b8; }
+
+/* Mission */
+.mission-box {
+  background: var(--card); border: 1px solid var(--line);
+  border-left: 6px solid var(--gold); border-radius: 14px;
+  padding: 1.3rem 1.4rem; margin: 1rem 0 2.2rem;
+}
+.mission-box p { margin-bottom: 0.9rem; line-height: 1.65; }
+.mission-box p:last-child { margin-bottom: 0; }
+.mission-team { font-style: italic; color: var(--muted); }
+
 /* Region boxes: stories grouped by country */
 #region-boxes { display: grid; gap: 1.1rem; margin: 1rem 0 2.2rem; }
 .region-box {
