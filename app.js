@@ -500,6 +500,15 @@ function bindPaint() {
    * one handler per event, no matter how many times this runs. */
   c.onpointerdown = ev => {
     ev.preventDefault();
+    /* DIAGNOSTIC: always draw a magenta dot to prove the handler fires. */
+    try {
+      const dbg = c.getContext("2d");
+      const rr = c.getBoundingClientRect();
+      const dx = (ev.clientX - rr.left) / rr.width * c.width;
+      const dy = (ev.clientY - rr.top) / rr.height * c.height;
+      dbg.fillStyle = "#ff00ff";
+      dbg.beginPath(); dbg.arc(dx, dy, 12, 0, 7); dbg.fill();
+    } catch (e) {}
     if (!artW || !artH || !pctx) return;            // image not ready yet
     try { c.setPointerCapture(ev.pointerId); } catch (e) {}
     const r = c.getBoundingClientRect();
