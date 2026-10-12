@@ -354,7 +354,10 @@ function openStudio(art) {
   document.getElementById("studio").hidden = false;
   document.getElementById("studio-title").textContent = art.title;
   buildColorWheel();
-  canvas = document.getElementById("paint-canvas");
+  /* Fresh canvas element clears any stale listeners, then bind anew. */
+  const oldC = document.getElementById("paint-canvas");
+  canvas = oldC.cloneNode(false);
+  oldC.parentNode.replaceChild(canvas, oldC);
   bindPaint();
   ctx = canvas.getContext("2d");
   paintCanvas = document.createElement("canvas");
@@ -499,9 +502,8 @@ function canvasPos(ev) {
 }
 
 function bindPaint() {
-  canvas = document.getElementById("paint-canvas");
-  if (!canvas || canvas.dataset.bound) return;
-  canvas.dataset.bound = "1";
+  if (!canvas) canvas = document.getElementById("paint-canvas");
+  if (!canvas) return;
   const start = ev => {
     ev.preventDefault();
     if (!artW || !artH) return;                     // image not ready yet
