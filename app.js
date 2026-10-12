@@ -354,11 +354,10 @@ function openStudio(art) {
   document.getElementById("studio").hidden = false;
   document.getElementById("studio-title").textContent = art.title;
   buildColorWheel();
-  /* Fresh canvas element clears any stale listeners, then bind anew. */
-  const oldC = document.getElementById("paint-canvas");
-  canvas = oldC.cloneNode(false);
-  oldC.parentNode.replaceChild(canvas, oldC);
-  bindPaint();
+  /* Use the canvas directly. Listeners are bound once at boot via
+   * property assignment (not addEventListener), so they can never
+   * duplicate or go stale. */
+  canvas = document.getElementById("paint-canvas");
   ctx = canvas.getContext("2d");
   paintCanvas = document.createElement("canvas");
   pctx = paintCanvas.getContext("2d");
@@ -494,21 +493,18 @@ function floodFill(sx, sy) {
   renderComposite();
 }
 
-function canvasPos(ev) {
-  const r = canvas.getBoundingClientRect();
-  const cx = (ev.touches && ev.touches[0] ? ev.touches[0].clientX : ev.clientX);
-  const cy = (ev.touches && ev.touches[0] ? ev.touches[0].clientY : ev.clientY);
-  return [Math.floor((cx - r.left) / r.width * artW), Math.floor((cy - r.top) / r.height * artH)];
-}
-
 function bindPaint() {
-  if (!canvas) canvas = document.getElementById("paint-canvas");
-  if (!canvas) return;
-  const start = ev => {
+  const c = document.getElementById("paint-canvas");
+  if (!c) return;
+  /* Direct property assignment (not addEventListener) guarantees exactly
+   * one handler per event, no matter how many times this runs. */
+  c.onpointerdown = ev => {
     ev.preventDefault();
-    if (!artW || !artH) return;                     // image not ready yet
-    try { canvas.setPointerCapture(ev.pointerId); } catch (e) {}
-    const [x, y] = canvasPos(ev);
+    if (!artW || !artH || !pctx) return;            // image not ready yet
+    try { c.setPointerCapture(ev.pointerId); } catch (e) {}
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((ev.clientX - r.left) / r.width * artW);
+    const y = Math.floor((ev.clientY - r.top) / r.height * artH);
     if (paintTool === "fill") { floodFill(x, y); return; }
     painting = true; pushUndo();
     pctx.strokeStyle = paintColor; pctx.fillStyle = paintColor;
@@ -516,17 +512,43 @@ function bindPaint() {
     pctx.beginPath(); pctx.moveTo(x, y); pctx.lineTo(x + 0.1, y + 0.1); pctx.stroke();
     renderComposite();
   };
-  const move = ev => {
-    if (!painting || paintTool !== "brush") return;
+  c.onpointermove = ev => {
+    if (!painting || paintTool !== "brush" || !pctx) return;
     ev.preventDefault();
-    const [x, y] = canvasPos(ev);
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((ev.clientX - r.left) / r.width * artW);
+    const y = Math.floor((ev.clientY - r.top) / r.height * artH);
     pctx.lineTo(x, y); pctx.stroke();
     renderComposite();
   };
-  const end = () => { painting = false; };
-  canvas.addEventListener("pointerdown", start);
-  canvas.addEventListener("pointermove", move);
-  window.addEventListener("pointerup", end);
+  c.onpointerup = () => { painting = false; };
+  c.onpointercancel = () => { painting = false; };
+  /* Touch fallback for older mobile browsers. */
+  c.ontouchstart = ev => {
+    ev.preventDefault();
+    if (!artW || !artH || !pctx || !ev.touches[0]) return;
+    const t = ev.touches[0];
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((t.clientX - r.left) / r.width * artW);
+    const y = Math.floor((t.clientY - r.top) / r.height * artH);
+    if (paintTool === "fill") { floodFill(x, y); return; }
+    painting = true; pushUndo();
+    pctx.strokeStyle = paintColor; pctx.fillStyle = paintColor;
+    pctx.lineWidth = brushSize; pctx.lineCap = "round"; pctx.lineJoin = "round";
+    pctx.beginPath(); pctx.moveTo(x, y); pctx.lineTo(x + 0.1, y + 0.1); pctx.stroke();
+    renderComposite();
+  };
+  c.ontouchmove = ev => {
+    if (!painting || paintTool !== "brush" || !pctx || !ev.touches[0]) return;
+    ev.preventDefault();
+    const t = ev.touches[0];
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((t.clientX - r.left) / r.width * artW);
+    const y = Math.floor((t.clientY - r.top) / r.height * artH);
+    pctx.lineTo(x, y); pctx.stroke();
+    renderComposite();
+  };
+  c.ontouchend = () => { painting = false; };
 }
 
 document.getElementById("tool-fill").addEventListener("click", e => {
