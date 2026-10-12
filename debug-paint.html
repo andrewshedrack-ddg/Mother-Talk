@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paint Debug</title>
+<style>
+#paint-canvas { width: 100%; max-width: 400px; border: 2px solid #333; touch-action: none; display: block; }
+#log { font-family: monospace; font-size: 12px; white-space: pre-wrap; background: #f0f0f0; padding: 10px; margin-top: 10px; max-height: 300px; overflow: auto; }
+</style></head><body>
+<h3>Paint Debug Test</h3>
+<canvas id="paint-canvas" width="300" height="300"></canvas>
+<div id="log"></div>
+<script>
+const log = msg => { document.getElementById('log').textContent += msg + '\n'; };
+let canvas = document.getElementById('paint-canvas');
+let ctx = canvas.getContext('2d');
+let artW = 300, artH = 300;
+
+// Draw test pattern
+ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,300,300);
+ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+ctx.strokeRect(50,50,200,200);
+ctx.beginPath(); ctx.moveTo(50,50); ctx.lineTo(250,250); ctx.stroke();
+log('Canvas setup done. Canvas in DOM: ' + !!document.getElementById('paint-canvas'));
+log('Canvas === getElementById: ' + (canvas === document.getElementById('paint-canvas')));
+
+// Simulate openStudio clone
+const oldC = document.getElementById('paint-canvas');
+const newC = oldC.cloneNode(false);
+oldC.parentNode.replaceChild(newC, oldC);
+canvas = newC;
+log('After clone: canvas === getElementById: ' + (canvas === document.getElementById('paint-canvas')));
+log('New canvas width: ' + canvas.width + ', height: ' + canvas.height);
+
+// Re-get context (critical: clone needs new context!)
+ctx = canvas.getContext('2d');
+log('Got new context');
+
+// Redraw test pattern on new canvas
+ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,300,300);
+ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+ctx.strokeRect(50,50,200,200);
+
+// Bind paint
+canvas.addEventListener('pointerdown', ev => {
+  ev.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  const x = (ev.clientX - r.left) / r.width * artW;
+  const y = (ev.clientY - r.top) / r.height * artH;
+  log('POINTERDOWN at ' + Math.round(x) + ',' + Math.round(y));
+  ctx.fillStyle = '#ff0000';
+  ctx.beginPath(); ctx.arc(x, y, 10, 0, 7); ctx.fill();
+  log('Drew red dot');
+});
+
+log('Listener attached. Tap the canvas.');
+</script></body></html>
