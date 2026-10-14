@@ -10,7 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mother-talk-dev-key-change-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://localhost/mother_talk')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'mother_talk.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
@@ -380,7 +380,7 @@ def seed_database():
 # ─── Initialize on import ───────────────────────────────────────────────
 
 
-seed_database()
+# seed_database()  # Seed on demand via init script instead of auto-import
 
 # ─── Run ────────────────────────────────────────────────────────────────
 
