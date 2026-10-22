@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="section-title">My progress</h2>
+<p class="section-sub">Your Duolingo-style learning stats, earned from real quiz answers.</p>
+
+<div class="game-panel">
+  <div class="game-main">
+    <span class="game-xp">{{ game.xp }} XP</span>
+    <span class="game-level">Level: {{ game.level }}</span>
+    {% if game.xp_to_next_level %}
+    <div class="bar"><div style="width:{{ game.level_progress_pct }}%"></div></div>
+    <small>{{ game.xp_to_next_level }} XP to the next level</small>
+    {% else %}
+    <small>Top level reached. Hongera, {{ game.level }}!</small>
+    {% endif %}
+  </div>
+  <div class="game-side">
+    <div class="game-stat"><strong>&#128293; {{ game.streak }}</strong><span>day streak</span></div>
+    <div class="game-stat"><strong>{{ game.xp_today }} / {{ game.daily_goal_xp }} XP</strong><span>daily goal</span></div>
+    <div class="bar"><div style="width:{{ game.daily_goal_pct }}%"></div></div>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat"><div class="num">{{ total_points }}</div><div class="lbl">quiz points earned</div></div>
+  <div class="stat"><div class="num">{{ stories_started }}</div><div class="lbl">stories started</div></div>
+  <div class="stat"><div class="num">{{ game.streak }}</div><div class="lbl">day streak</div></div>
+  <div class="stat"><div class="num">{% if total_possible %}{{ (100*total_points/total_possible)|round(0) }}%{% else %}0%{% endif %}</div><div class="lbl">overall score</div></div>
+</div>
+
+<h2 class="section-title">Scores per story</h2>
+{% for row in story_rows %}
+<div class="card" style="margin-bottom:0.8rem"><div class="pad">
+  <h2>{{ row.title }}</h2>
+  <div class="bar"><div style="width:{{ row.pct }}%"></div></div>
+  <small>{{ row.got }}/{{ row.total }} points ({{ row.pct }}%)</small>
+</div></div>
+{% else %}
+<p>No scores yet. Play a story and answer its quizzes.</p>
+{% endfor %}
+<p class="note">See how you rank on the <a href="{{ url_for('story.leaderboard') }}">leaderboard</a>.</p>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Admin panel</h1>
+
+<div class="panel-section">
+  <h2>Pending stories ({{ pending|length }})</h2>
+  {% for s in pending %}
+  <p><strong>{{ s.title }}</strong> — {{ s.language }}<br>
+  <small>{{ s.description }}</small></p>
+  <form class="inline-form" method="post" action="{{ url_for('admin.approve', story_id=s.id) }}">
+    <button type="submit">Approve</button>
+  </form>
+  <form class="inline-form" method="post" action="{{ url_for('admin.reject', story_id=s.id) }}">
+    <button type="submit" class="secondary">Reject</button>
+  </form>
+  {% else %}
+  <p>Nothing waiting for review.</p>
+  {% endfor %}
+</div>
+
+<div class="panel-section">
+  <h2>Users</h2>
+  <table class="report">
+    <tr><th>Username</th><th>Role</th><th>Change role</th></tr>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.username }}</td>
+      <td>{{ u.role }}</td>
+      <td>
+        <form class="roleform" method="post" action="{{ url_for('admin.set_role', user_id=u.id) }}">
+          <select name="role">
+            <option value="learner" {% if u.role=='learner' %}selected{% endif %}>learner</option>
+            <option value="contributor" {% if u.role=='contributor' %}selected{% endif %}>contributor</option>
+            <option value="admin" {% if u.role=='admin' %}selected{% endif %}>admin</option>
+          </select>
+          <button type="submit">Set</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="panel-section">
+  <h2>Reports</h2>
+  <h3>Most played stories</h3>
+  <table class="report">
+    <tr><th>Story</th><th>Choices made</th></tr>
+    {% for sid, count in most_played %}
+    <tr><td>{{ sid }}</td><td>{{ count }}</td></tr>
+    {% else %}
+    <tr><td colspan="2">No activity yet.</td></tr>
+    {% endfor %}
+  </table>
+  <h3>Weakest scores (need attention)</h3>
+  <table class="report">
+    <tr><th>Story</th><th>Average score</th></tr>
+    {% for row in weak_rows %}
+    <tr><td>{{ row.title }}</td><td>{{ row.pct }}% ({{ row.got }}/{{ row.total }})</td></tr>
+    {% else %}
+    <tr><td colspan="2">No quiz attempts yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

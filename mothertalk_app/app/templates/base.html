@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1c1108">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="MotherTalk — learn indigenous African languages through living stories. Kikuyu, Kamba, Swahili, Dholuo and Luganda.">
+  <title>MotherTalk — Learn African languages through stories</title>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('story.landing') }}">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="MotherTalk logo">
+      <span class="brand-text"><span class="brand-name">MotherTalk</span><span class="brand-tag">Your voice, your ideas, our journey</span></span>
+    </a>
+    <nav>
+      <a href="{{ url_for('story.leaderboard') }}">Board</a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('story.select') }}">Stories</a>
+      <a href="{{ url_for('story.dashboard') }}">Dashboard</a>
+      {% if current_user.role in ('contributor', 'admin') %}
+      <a href="{{ url_for('contribute.upload') }}">Contribute</a>
+      {% endif %}
+      {% if current_user.role == 'admin' %}
+      <a href="{{ url_for('admin.panel') }}">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('auth.logout') }}">Log out</a>
+      {% else %}
+      <a href="{{ url_for('auth.login') }}">Log in</a>
+      <a class="nav-cta" href="{{ url_for('auth.register') }}">Join free</a>
+      {% endif %}
+    </nav>
+  </header>
+  <div class="kente"></div>
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash">{% for m in messages %}<li>{{ m }}</li>{% endfor %}</ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <div class="kente"></div>
+  <footer>
+    <div class="footer-inner">
+      <p><strong>MotherTalk</strong> — stories that keep our languages alive.</p>
+      <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini. Story phrases are demos and will be reviewed by native speakers.</p>
+    </div>
+  </footer>
+  <script>
+    // Progressive Web App: installable + offline story/audio cache.
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(function(){});
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

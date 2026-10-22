@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero hero-big">
+  <h1>Learn a language by <span class="accent">living a story.</span></h1>
+  <p>MotherTalk turns indigenous African languages into interactive stories you step inside: greetings at sunrise, bargains at the market, blessings by the lake. You do not study the language. You live it, scene by scene.</p>
+  {% if current_user.is_authenticated %}
+  <a class="cta" href="{{ url_for('story.select') }}">Continue learning</a>
+  {% else %}
+  <a class="cta" href="{{ url_for('auth.register') }}">Start learning free</a>
+  <a class="cta ghost" href="{{ url_for('auth.login') }}">Log in</a>
+  {% endif %}
+  <div class="hero-stats">
+    <div><strong>{{ story_count }}</strong><span>stories</span></div>
+    <div><strong>{{ language_count }}</strong><span>languages</span></div>
+    <div><strong>{{ countries|length }}</strong><span>countries</span></div>
+    <div><strong>100%</strong><span>free to learn</span></div>
+  </div>
+</section>
+
+<h2 class="section-title">The problem</h2>
+<p class="section-sub">A language disappears somewhere in the world every two weeks.</p>
+<div class="steps">
+  <div class="step"><span class="step-n">!</span><h3>Languages are fading</h3><p>Across Africa, young people are growing up unable to speak their grandparents' tongues. When a language dies, its stories, proverbs and knowledge die with it.</p></div>
+  <div class="step"><span class="step-n">!</span><h3>School leaves them out</h3><p>UNESCO estimates that 40% of people worldwide lack access to education in a language they actually speak or understand. Indigenous languages are rarely taught at all.</p></div>
+  <div class="step"><span class="step-n">!</span><h3>Apps ignore them</h3><p>The big language apps teach French, Spanish and Mandarin. Almost nobody builds joyful, story-first learning for Kikuyu, Dholuo, Luganda, Kamba or coastal Swahili. Until now.</p></div>
+</div>
+
+<h2 class="section-title">How MotherTalk works</h2>
+<p class="section-sub">The Duolingo loop, rebuilt around African storytelling.</p>
+<div class="steps">
+  <div class="step"><span class="step-n">1</span><h3>Pick a story</h3><p>Choose a tale in the language you want to learn, from Kenya, Uganda and Tanzania.</p></div>
+  <div class="step"><span class="step-n">2</span><h3>Live the scenes</h3><p>Read and hear real phrases, make choices that branch the story, and pick up culture notes as you go.</p></div>
+  <div class="step"><span class="step-n">3</span><h3>Earn and climb</h3><p>Quizzes mark themselves instantly. Earn XP, protect your daily streak, climb from Mgeni to Mzee on the board.</p></div>
+</div>
+
+<h2 class="section-title">Languages on MotherTalk</h2>
+<p class="section-sub">Served live by our API. Tap a greeting to see it, exactly as the app fetches it.</p>
+<div class="lang-grid" id="lang-grid">
+  {% for lang in languages %}
+  <div class="lang-card">
+    <h3>{{ lang.name }}</h3>
+    <span class="lang-country">{{ lang.country }}</span>
+    <p class="lang-greet">{{ lang.greeting.phrase }}</p>
+    <p class="lang-meaning">{{ lang.greeting.meaning }}</p>
+    <p class="lang-stories">{{ lang.stories|length }} stor{{ 'y' if lang.stories|length == 1 else 'ies' }}</p>
+  </div>
+  {% endfor %}
+</div>
+<p class="note">Developers: this same data is open at <code>/api/languages</code> and <code>/api/stories</code>. New languages join by adding a JSON file, never by rewriting code.</p>
+
+<h2 class="section-title">Built to keep you coming back</h2>
+<div class="steps">
+  <div class="step"><span class="step-n">XP</span><h3>Experience points</h3><p>Every correct answer banks XP. Levels rise from Mgeni (guest) to Mzee (elder).</p></div>
+  <div class="step"><span class="step-n">30</span><h3>Daily goal</h3><p>A gentle 30 XP a day keeps the habit alive, the way the best learning apps do.</p></div>
+  <div class="step"><span class="step-n">&#128293;</span><h3>Streaks &amp; board</h3><p>Learn daily to grow your streak, then defend your place on the public leaderboard.</p></div>
+</div>
+
+<h2 class="section-title">Where we are going</h2>
+<div class="steps">
+  <div class="step"><span class="step-n">Now</span><h3>MVP live</h3><p>6 interactive stories, 5 languages, native-speaker audio, quizzes, XP, streaks and a leaderboard, as a fast installable web app.</p></div>
+  <div class="step"><span class="step-n">Next</span><h3>Voices &amp; schools</h3><p>Recorded native speakers for every scene, 20+ stories, and a pilot with schools that teach mother tongue.</p></div>
+  <div class="step"><span class="step-n">Later</span><h3>A living archive</h3><p>Community story submissions from elders across Africa, offline packs, and a mobile app, so no language is left silent.</p></div>
+</div>
+
+<div class="mission-box">
+  <p>Every story on MotherTalk is an act of preservation. When a learner finishes Wanjiru's Market Day, a piece of Kikuyu lives on in a new voice. Multiply that by thousands of learners and dozens of languages, and a generation reconnects with where it comes from.</p>
+  <p class="mission-team">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini, Strathmore University DBIT.</p>
+  {% if not current_user.is_authenticated %}
+  <p style="margin-top:1rem"><a class="cta" href="{{ url_for('auth.register') }}">Join MotherTalk</a></p>
+  {% endif %}
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+// Proof the page and the API agree: fetch the language list live and
+// mark each card once the API confirms it.
+fetch("/api/languages").then(function(r){ return r.json(); }).then(function(data){
+  var names = data.languages.map(function(l){ return l.name; });
+  document.querySelectorAll(".lang-card h3").forEach(function(h){
+    if (names.indexOf(h.textContent) !== -1) { h.title = "Confirmed by /api/languages"; }
+  });
+}).catch(function(){});
+</script>
+{% endblock %}
