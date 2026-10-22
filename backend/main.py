@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, F
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, Session
 from passlib.context import CryptContext
 from jose import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json, os
 
 SECRET_KEY = "mother-talk-secret-key-change-in-production"
@@ -26,7 +26,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
 class Progress(Base):
     __tablename__ = "progress"
@@ -36,8 +36,8 @@ class Progress(Base):
     current_node = Column(String, nullable=False)
     choices_made = Column(Text, default="[]")
     completed = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
     __table_args__ = (UniqueConstraint('user_id', 'story_id', name='uq_user_story'),)
     user = relationship("User")
 
@@ -54,7 +54,7 @@ def get_db():
 def hash_pw(pw): return pwd_context.hash(pw)
 def verify_pw(pw, hpw): return pwd_context.verify(pw, hpw)
 def create_token(data): 
-    return jwt.encode({**data, "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)}, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode({**data, "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)}, SECRET_KEY, algorithm=ALGORITHM)
 def decode_token(token):
     try: return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except: return None
@@ -146,9 +146,15 @@ def update_progress(story_id: str, data: ProgressIn, db: Session = Depends(get_d
     if not p: raise HTTPException(404, "Progress not found")
     p.current_node = data.current_node
     p.choices_made = json.dumps(data.choices_made)
-    p.updated_at = datetime.utcnow()
+    p.updated_at = datetime.now(timezone.utc)
     db.commit(); db.refresh(p)
     return {"story_id": p.story_id, "current_node": p.current_node, "choices_made": json.loads(p.choices_made), "completed": bool(p.completed), "updated_at": p.updated_at}
 
 @app.get("/")
-def root(): return {"message": "Mother Talk API running"}
+def root():
+    return {"message": "Mother Talk API running"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000)    
