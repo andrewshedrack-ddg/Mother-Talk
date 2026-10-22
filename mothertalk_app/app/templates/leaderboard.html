@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="section-title">Leaderboard</h2>
+<p class="section-sub">Top learners by XP. Earn yours by finishing story quizzes.</p>
+<div class="board-card">
+  {% if rows %}
+  <ol class="board-list">
+    {% for row in rows %}
+    <li>
+      <span class="rank">{{ loop.index }}</span>
+      <span class="who"><strong>{{ row.username }}</strong><small>{{ row.level }} &middot; {{ row.streak }} day streak</small></span>
+      <span class="pts">{{ row.xp }} XP</span>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="note" style="text-align:center">No scores yet. Be the first name on this board.</p>
+  {% endif %}
+</div>
+<p class="note">The board is also open as data at <code>/api/leaderboard</code>.</p>
+{% endblock %}

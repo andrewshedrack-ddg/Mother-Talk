@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Contribute a story</h1>
+<p>Upload a story script as JSON plus the native-speaker MP3 clips it uses.
+An admin reviews every upload before learners can see it.</p>
+<form method="post" enctype="multipart/form-data" class="auth form upload">
+  <label>Story title <input name="title" required></label>
+  <label>Language
+    <select name="language" required>
+      <option value="">Choose…</option>
+      <option>Kikuyu</option><option>Dholuo</option><option>Luhya</option>
+      <option>Kalenjin</option><option>Kamba</option><option>Meru</option>
+      <option>Other</option>
+    </select>
+  </label>
+  <label>Description <textarea name="description" rows="3"></textarea></label>
+  <label>Story JSON file <input type="file" name="story_file" accept=".json" required></label>
+  <label>Audio clips (MP3, you can pick several) <input type="file" name="audio_files" accept=".mp3" multiple></label>
+  <button type="submit">Submit for review</button>
+</form>
+
+<h2>My uploads</h2>
+<table class="report">
+  <tr><th>Title</th><th>Language</th><th>Status</th></tr>
+  {% for u in uploads %}
+  <tr><td>{{ u.title }}</td><td>{{ u.language }}</td><td>{{ u.status }}</td></tr>
+  {% else %}
+  <tr><td colspan="3">Nothing uploaded yet.</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Story JSON format</h2>
+<p>Each scene needs an id, the native line, its English translation, an optional
+audio filename, choices and quizzes. Example:</p>
+<pre style="background:var(--ink);color:var(--cream);padding:0.8rem;border-radius:8px;overflow-x:auto;font-size:0.8rem;">{
+  "title": "My Story",
+  "language": "Kikuyu",
+  "start": "scene1",
+  "scenes": {
+    "scene1": {
+      "character": "Amina",
+      "native": "Wĩmwega?",
+      "translation": "How are you?",
+      "audio": "myscene1.mp3",
+      "choices": [
+        {"label": "Ndĩ mwega.", "next": "scene2"}
+      ],
+      "quizzes": [
+        {"question": "What does 'Wĩmwega?' mean?",
+         "options": ["How are you?", "Goodbye", "Thanks"],
+         "answer": 0}
+      ]
+    }
+  }
+}</pre>
+{% endblock %}

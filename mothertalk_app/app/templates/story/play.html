@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ story.title }}</h1>
+<div id="stage">
+  <div id="scene-art"><img id="art" alt="Scene illustration"></div>
+  <div id="dialogue">
+    <div class="who">
+      <img id="portrait" alt="Character">
+      <strong id="character"></strong>
+    </div>
+    <p class="native" id="native"></p>
+    <p class="translation" id="translation"></p>
+    <button id="say" hidden>&#128266; Play pronunciation</button>
+    <audio id="clip" preload="auto"></audio>
+    <p class="culture" id="culture" hidden></p>
+  </div>
+  <div id="reply"></div>
+  <div id="progress-line"></div>
+  <div id="choices"></div>
+  <div id="quiz" hidden></div>
+</div>
+<p><a class="btn secondary" href="{{ url_for('story.select') }}">&larr; All stories</a></p>
+{% endblock %}
+{% block scripts %}
+<script>
+const STORY = {{ story.id | tojson }};
+const START = {{ story.start | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/play.js') }}"></script>
+{% endblock %}
