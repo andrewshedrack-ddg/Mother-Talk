@@ -40,9 +40,21 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        ensure_user_active_column()
         seed_demo_data()
 
     return app
+
+
+def ensure_user_active_column():
+    """FR-16 upgrade guard: databases created before the is_active
+    column existed gain it in place, so no saved data is ever lost."""
+    from sqlalchemy import inspect, text
+    columns = [c["name"] for c in inspect(db.engine).get_columns("user")]
+    if "is_active" not in columns:
+        db.session.execute(text(
+            "ALTER TABLE user ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT 1"))
+        db.session.commit()
 
 
 def seed_demo_data():

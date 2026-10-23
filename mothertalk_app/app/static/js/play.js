@@ -38,6 +38,27 @@
       say.onclick = function () { clip.play(); };
     } else { say.hidden = true; }
 
+    // FR-20: the Web Speech API (an external actor in the design)
+    // converts story text to speech in the learner's browser.
+    // FR-21: practise mode speaks slowly so the learner repeats aloud.
+    var tts = $("tts"), practise = $("practise");
+    var phrase = scene.native || scene.text || "";
+    if ("speechSynthesis" in window && phrase) {
+      tts.hidden = false;
+      practise.hidden = false;
+      var speak = function (rate) {
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(phrase);
+        u.rate = rate;
+        window.speechSynthesis.speak(u);
+      };
+      tts.onclick = function () { speak(1); };
+      practise.onclick = function () {
+        speak(0.6);
+        $("reply").textContent = "Your turn: say it out loud, then tap Practise again to compare.";
+      };
+    } else { tts.hidden = true; practise.hidden = true; }
+
     $("reply").textContent = "";
     $("progress-line").textContent = "Scene " + sceneCount;
 

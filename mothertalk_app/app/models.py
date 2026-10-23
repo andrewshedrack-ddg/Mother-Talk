@@ -13,6 +13,9 @@ Documented implementation choices (kept honest, on purpose):
   list), so scenes_completed counts distinct scenes exactly.
 - USER logs in with a unique username; full_name and email follow the
   ERD, and email is optional at registration but unique when given.
+- USER carries one extra column, is_active: FR-16 (administrator
+  deactivates an account) needs a stored account status, and a
+  deactivated account must fail login even with the right password.
 """
 from datetime import datetime
 
@@ -33,6 +36,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(128), unique=True, nullable=True)
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(16), default="learner")  # learner | contributor | admin
+    is_active = db.Column(db.Boolean, default=True, nullable=False)  # FR-16
     created = db.Column(db.DateTime, default=datetime.utcnow)  # created_at
 
     def set_password(self, password):

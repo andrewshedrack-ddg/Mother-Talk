@@ -46,6 +46,9 @@ def login():
     if request.method == "POST":
         user = User.query.filter_by(username=request.form.get("username", "").strip()).first()
         if user and user.check_password(request.form.get("password", "")):
+            if not user.is_active:
+                flash("This account has been deactivated. Please contact the administrator.")
+                return render_template("auth/login.html")
             login_user(user)
             return redirect(url_for("story.select"))
         flash("Wrong username or password.")

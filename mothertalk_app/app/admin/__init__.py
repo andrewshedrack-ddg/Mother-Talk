@@ -1,7 +1,7 @@
 """Admin panel: approve stories, manage users, read reports."""
 import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy import func
 from app import db
 from app.models import User, Story, QuizResult, Progress
@@ -58,6 +58,30 @@ def reject(story_id):
     db.session.delete(story)
     db.session.commit()
     flash("Story rejected and removed.")
+    return redirect(url_for("admin.panel"))
+
+
+@bp.route("/deactivate/<int:user_id>", methods=["POST"])
+@roles_required("admin")
+def deactivate(user_id):
+    """FR-16: a deactivated account keeps its data but cannot log in."""
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash("You cannot deactivate your own account.")
+    else:
+        user.is_active = False
+        db.session.commit()
+        flash(f"{user.username} has been deactivated.")
+    return redirect(url_for("admin.panel"))
+
+
+@bp.route("/activate/<int:user_id>", methods=["POST"])
+@roles_required("admin")
+def activate(user_id):
+    user = User.query.get_or_404(user_id)
+    user.is_active = True
+    db.session.commit()
+    flash(f"{user.username} has been reactivated.")
     return redirect(url_for("admin.panel"))
 
 

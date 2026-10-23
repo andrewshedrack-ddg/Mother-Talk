@@ -21,11 +21,12 @@
 <div class="panel-section">
   <h2>Users</h2>
   <table class="report">
-    <tr><th>Username</th><th>Role</th><th>Change role</th></tr>
+    <tr><th>Username</th><th>Role</th><th>Status</th><th>Change role</th><th>Account</th></tr>
     {% for u in users %}
     <tr>
       <td>{{ u.username }}</td>
       <td>{{ u.role }}</td>
+      <td>{{ "Active" if u.is_active else "Deactivated" }}</td>
       <td>
         <form class="roleform" method="post" action="{{ url_for('admin.set_role', user_id=u.id) }}">
           <select name="role">
@@ -35,6 +36,19 @@
           </select>
           <button type="submit">Set</button>
         </form>
+      </td>
+      <td>
+        {% if u.id != current_user.id %}
+          {% if u.is_active %}
+          <form class="inline-form" method="post" action="{{ url_for('admin.deactivate', user_id=u.id) }}">
+            <button type="submit" class="secondary">Deactivate</button>
+          </form>
+          {% else %}
+          <form class="inline-form" method="post" action="{{ url_for('admin.activate', user_id=u.id) }}">
+            <button type="submit">Reactivate</button>
+          </form>
+          {% endif %}
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

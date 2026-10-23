@@ -147,11 +147,11 @@ never stored as a drifting counter:
 | FR-13 | System validate story script | Done | JSON parse and scenes/start check on upload |
 | FR-14 | Administrator approve story | Done | `admin.approve` |
 | FR-15 | Administrator reject story | Done | `admin.reject` |
-| FR-16 | Administrator deactivate user account | Partial | Admin manages roles; a dedicated deactivate flag is future work |
+| FR-16 | Administrator deactivate user account | Done | USER.is_active flag; admin panel Deactivate/Reactivate actions; a deactivated account fails login with a clear message |
 | FR-17 | System parse story script | Done | `load_story` JSON parsing |
 | FR-18 | System branch story path | Done | Choice `next` pointers |
 | FR-19 | System retrieve scene audio | Done | `audio` blueprint |
-| FR-20 | Web Speech API convert text to speech | Partial | Pronunciation is native-speaker MP3 in this build; speech synthesis fallback ships in the static PWA build |
+| FR-20 | Web Speech API convert text to speech | Done | The player speaks any scene's text through the browser Web Speech API (Listen button); recorded native-speaker MP3 remains the primary pronunciation source |
 | FR-21 | Learner practise pronunciation | Done | Play pronunciation per scene and repeat along; no voice capture, by design |
 | FR-22 | System mark quiz answers | Done | `assessment.submit` |
 | FR-23 | System update learner streak | Done | `gamification.streak_days`, PROGRESS snapshot |
@@ -201,7 +201,7 @@ on disk, with real file sizes.
 - Demo story phrases await native-speaker review (stated in the app footer).
 - Recorded audio currently covers the flagship Kikuyu story; other stories
   gain clips through the contributor flow.
-- FR-16 (account deactivation) and FR-20 (speech synthesis in the Flask
-  build) are partial, as marked in the coverage table.
+- Every functional requirement in the design (36 of 36) is implemented;
+  see the coverage table in section 7.
 - The SQLite database suits the MVP; the models migrate to a server
   database without code changes through SQLAlchemy.
