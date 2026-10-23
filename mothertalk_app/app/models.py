@@ -16,6 +16,9 @@ Documented implementation choices (kept honest, on purpose):
 - USER carries one extra column, is_active: FR-16 (administrator
   deactivates an account) needs a stored account status, and a
   deactivated account must fail login even with the right password.
+- STORY carries one extra column, description: the story selection
+  screen shows a one-line summary per story (catalogue data), which
+  the ERD does not list as an attribute.
 """
 from datetime import datetime
 

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: mothertalk
+    env: python
+    rootDir: mothertalk_app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.0

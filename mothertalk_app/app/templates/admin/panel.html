@@ -59,11 +59,11 @@
   <h2>Reports</h2>
   <h3>Most played stories</h3>
   <table class="report">
-    <tr><th>Story</th><th>Choices made</th></tr>
-    {% for sid, count in most_played %}
-    <tr><td>{{ sid }}</td><td>{{ count }}</td></tr>
+    <tr><th>Story</th><th>Learners</th><th>Scenes completed</th></tr>
+    {% for sid, learners, scenes in most_played %}
+    <tr><td>{{ sid }}</td><td>{{ learners }}</td><td>{{ scenes }}</td></tr>
     {% else %}
-    <tr><td colspan="2">No activity yet.</td></tr>
+    <tr><td colspan="3">No activity yet.</td></tr>
     {% endfor %}
   </table>
   <h3>Weakest scores (need attention)</h3>

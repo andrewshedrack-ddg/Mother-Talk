@@ -16,8 +16,11 @@ def panel():
     pending = Story.query.filter_by(status="pending").order_by(Story.created.desc()).all()
     users = User.query.order_by(User.username).all()
 
-    # Report 1: most played stories (choice events per story).
-    most_played = (db.session.query(Progress.story_id, func.count(Progress.id))
+    # Report 1: most played stories. PROGRESS holds one row per learner
+    # and story (the design model), so popularity is counted in learners
+    # plus the total scenes they completed.
+    most_played = (db.session.query(Progress.story_id, func.count(Progress.id),
+                                    func.coalesce(func.sum(Progress.scenes_completed), 0))
                    .group_by(Progress.story_id)
                    .order_by(func.count(Progress.id).desc()).all())
 
