@@ -6,7 +6,12 @@
 /* ---------- storage ---------- */
 const store = {
   get(key, fallback) {
-    try { const raw = localStorage.getItem(key); return raw === null ? fallback : JSON.parse(raw); }
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) return fallback;
+      const v = JSON.parse(raw);
+      return (v === null || v === undefined) ? fallback : v;
+    }
     catch (e) { return fallback; }
   },
   set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
@@ -303,7 +308,19 @@ function allArts() {
   const B = (typeof COLORING_ARTS_B !== "undefined" ? COLORING_ARTS_B : []);
   const C = (typeof COLORING_ARTS_C !== "undefined" ? COLORING_ARTS_C : []);
   const D = (typeof COLORING_ARTS_D !== "undefined" ? COLORING_ARTS_D : []);
-  return A.concat(B).concat(C).concat(D);
+  const E = (typeof COLORING_ARTS_E !== "undefined" ? COLORING_ARTS_E : []);
+  const F = (typeof COLORING_ARTS_F !== "undefined" ? COLORING_ARTS_F : []);
+  const G = (typeof COLORING_ARTS_G !== "undefined" ? COLORING_ARTS_G : []);
+  const H = (typeof COLORING_ARTS_H !== "undefined" ? COLORING_ARTS_H : []);
+  const I = (typeof COLORING_ARTS_I !== "undefined" ? COLORING_ARTS_I : []);
+  const J = (typeof COLORING_ARTS_J !== "undefined" ? COLORING_ARTS_J : []);
+  const K = (typeof COLORING_ARTS_K !== "undefined" ? COLORING_ARTS_K : []);
+  const L = (typeof COLORING_ARTS_L !== "undefined" ? COLORING_ARTS_L : []);
+  const M = (typeof COLORING_ARTS_M !== "undefined" ? COLORING_ARTS_M : []);
+  const N = (typeof COLORING_ARTS_N !== "undefined" ? COLORING_ARTS_N : []);
+  const O = (typeof COLORING_ARTS_O !== "undefined" ? COLORING_ARTS_O : []);
+  const P = (typeof COLORING_ARTS_P !== "undefined" ? COLORING_ARTS_P : []);
+  return A.concat(B).concat(C).concat(D).concat(E).concat(F).concat(G).concat(H).concat(I).concat(J).concat(K).concat(L).concat(M).concat(N).concat(O).concat(P);
 }
 
 function renderArtGallery() {
@@ -336,7 +353,10 @@ function openStudio(art) {
   document.getElementById("art-gallery").hidden = true;
   document.getElementById("studio").hidden = false;
   document.getElementById("studio-title").textContent = art.title;
-  buildPalette();
+  buildColorWheel();
+  /* Use the canvas directly. Listeners are bound once at boot via
+   * property assignment (not addEventListener), so they can never
+   * duplicate or go stale. */
   canvas = document.getElementById("paint-canvas");
   ctx = canvas.getContext("2d");
   paintCanvas = document.createElement("canvas");
@@ -360,20 +380,63 @@ function openStudio(art) {
   document.getElementById("studio").hidden = false;
 }
 
-function buildPalette() {
-  const p = document.getElementById("palette");
-  p.innerHTML = "";
-  PALETTE.forEach(c => {
-    const s = document.createElement("div");
-    s.className = "swatch" + (c === paintColor ? " active" : "");
-    s.style.background = c; s.title = c;
-    s.addEventListener("click", () => {
-      paintColor = c;
-      p.querySelectorAll(".swatch").forEach(x => x.classList.remove("active"));
-      s.classList.add("active");
-    });
-    p.appendChild(s);
+/* Colour wheel: any hue and saturation, plus a lightness slider.
+ * Replaces the old fixed swatches. */
+let wheelLight = 0.55, lastHue = 14, lastSat = 0.72;
+function hsvToRgb(h, s, v) {
+  h = ((h % 360) + 360) % 360;
+  const c = v * s, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = v - c;
+  let r, g, b;
+  if (h < 60) { r = c; g = x; b = 0; }
+  else if (h < 120) { r = x; g = c; b = 0; }
+  else if (h < 180) { r = 0; g = c; b = x; }
+  else if (h < 240) { r = 0; g = x; b = c; }
+  else if (h < 300) { r = x; g = 0; b = c; }
+  else { r = c; g = 0; b = x; }
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+}
+function setPaintColor(h, s) {
+  lastHue = h; lastSat = s;
+  const [r, g, b] = hsvToRgb(h, s, wheelLight);
+  paintColor = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+  const pv = document.getElementById("color-preview");
+  if (pv) pv.style.background = paintColor;
+  const hx = document.getElementById("color-hex");
+  if (hx) hx.textContent = paintColor;
+}
+function buildColorWheel() {
+  const wheel = document.getElementById("color-wheel");
+  if (!wheel || wheel.dataset.built) return;
+  wheel.dataset.built = "1";
+  const S = wheel.width, wctx = wheel.getContext("2d");
+  const img = wctx.createImageData(S, S);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    const dx = x - S / 2 + 0.5, dy = y - S / 2 + 0.5;
+    const rr = Math.sqrt(dx * dx + dy * dy) / (S / 2);
+    const k = (y * S + x) * 4;
+    if (rr > 1) { img.data[k + 3] = 0; continue; }
+    let h = Math.atan2(dy, dx) * 180 / Math.PI; if (h < 0) h += 360;
+    const [r, g, b] = hsvToRgb(h, Math.min(1, rr), 1);
+    img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = 255;
+  }
+  wctx.putImageData(img, 0, 0);
+  const pick = ev => {
+    ev.preventDefault();
+    const rect = wheel.getBoundingClientRect();
+    const cx = (ev.clientX - rect.left) / rect.width * S - S / 2;
+    const cy = (ev.clientY - rect.top) / rect.height * S - S / 2;
+    if (Math.sqrt(cx * cx + cy * cy) / (S / 2) > 1) return;
+    let h = Math.atan2(cy, cx) * 180 / Math.PI; if (h < 0) h += 360;
+    setPaintColor(h, Math.min(1, Math.sqrt(cx * cx + cy * cy) / (S / 2)));
+  };
+  wheel.addEventListener("pointerdown", pick);
+  wheel.addEventListener("pointermove", ev => { if (ev.buttons) pick(ev); });
+  const li = document.getElementById("lightness");
+  if (li) li.addEventListener("input", ev => {
+    wheelLight = ev.target.value / 100;
+    setPaintColor(lastHue, lastSat);
   });
+  setPaintColor(lastHue, lastSat);
 }
 
 function hexToRgb(hex) {
@@ -430,20 +493,27 @@ function floodFill(sx, sy) {
   renderComposite();
 }
 
-function canvasPos(ev) {
-  const r = canvas.getBoundingClientRect();
-  const cx = (ev.touches && ev.touches[0] ? ev.touches[0].clientX : ev.clientX);
-  const cy = (ev.touches && ev.touches[0] ? ev.touches[0].clientY : ev.clientY);
-  return [Math.floor((cx - r.left) / r.width * artW), Math.floor((cy - r.top) / r.height * artH)];
-}
-
 function bindPaint() {
-  canvas = document.getElementById("paint-canvas");
-  const start = ev => {
+  const c = document.getElementById("paint-canvas");
+  if (!c) return;
+  /* Direct property assignment (not addEventListener) guarantees exactly
+   * one handler per event, no matter how many times this runs. */
+  c.onpointerdown = ev => {
     ev.preventDefault();
-    if (!artW || !artH) return;                     // image not ready yet
-    try { canvas.setPointerCapture(ev.pointerId); } catch (e) {}
-    const [x, y] = canvasPos(ev);
+    /* DIAGNOSTIC: always draw a magenta dot to prove the handler fires. */
+    try {
+      const dbg = c.getContext("2d");
+      const rr = c.getBoundingClientRect();
+      const dx = (ev.clientX - rr.left) / rr.width * c.width;
+      const dy = (ev.clientY - rr.top) / rr.height * c.height;
+      dbg.fillStyle = "#ff00ff";
+      dbg.beginPath(); dbg.arc(dx, dy, 12, 0, 7); dbg.fill();
+    } catch (e) {}
+    if (!artW || !artH || !pctx) return;            // image not ready yet
+    try { c.setPointerCapture(ev.pointerId); } catch (e) {}
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((ev.clientX - r.left) / r.width * artW);
+    const y = Math.floor((ev.clientY - r.top) / r.height * artH);
     if (paintTool === "fill") { floodFill(x, y); return; }
     painting = true; pushUndo();
     pctx.strokeStyle = paintColor; pctx.fillStyle = paintColor;
@@ -451,17 +521,43 @@ function bindPaint() {
     pctx.beginPath(); pctx.moveTo(x, y); pctx.lineTo(x + 0.1, y + 0.1); pctx.stroke();
     renderComposite();
   };
-  const move = ev => {
-    if (!painting || paintTool !== "brush") return;
+  c.onpointermove = ev => {
+    if (!painting || paintTool !== "brush" || !pctx) return;
     ev.preventDefault();
-    const [x, y] = canvasPos(ev);
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((ev.clientX - r.left) / r.width * artW);
+    const y = Math.floor((ev.clientY - r.top) / r.height * artH);
     pctx.lineTo(x, y); pctx.stroke();
     renderComposite();
   };
-  const end = () => { painting = false; };
-  canvas.addEventListener("pointerdown", start);
-  canvas.addEventListener("pointermove", move);
-  window.addEventListener("pointerup", end);
+  c.onpointerup = () => { painting = false; };
+  c.onpointercancel = () => { painting = false; };
+  /* Touch fallback for older mobile browsers. */
+  c.ontouchstart = ev => {
+    ev.preventDefault();
+    if (!artW || !artH || !pctx || !ev.touches[0]) return;
+    const t = ev.touches[0];
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((t.clientX - r.left) / r.width * artW);
+    const y = Math.floor((t.clientY - r.top) / r.height * artH);
+    if (paintTool === "fill") { floodFill(x, y); return; }
+    painting = true; pushUndo();
+    pctx.strokeStyle = paintColor; pctx.fillStyle = paintColor;
+    pctx.lineWidth = brushSize; pctx.lineCap = "round"; pctx.lineJoin = "round";
+    pctx.beginPath(); pctx.moveTo(x, y); pctx.lineTo(x + 0.1, y + 0.1); pctx.stroke();
+    renderComposite();
+  };
+  c.ontouchmove = ev => {
+    if (!painting || paintTool !== "brush" || !pctx || !ev.touches[0]) return;
+    ev.preventDefault();
+    const t = ev.touches[0];
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((t.clientX - r.left) / r.width * artW);
+    const y = Math.floor((t.clientY - r.top) / r.height * artH);
+    pctx.lineTo(x, y); pctx.stroke();
+    renderComposite();
+  };
+  c.ontouchend = () => { painting = false; };
 }
 
 document.getElementById("tool-fill").addEventListener("click", e => {
@@ -552,12 +648,12 @@ document.getElementById("btn-start").addEventListener("click", () => {
 
 /* ---------- boot ---------- */
 (function boot() {
-  updateStreak();
-  refreshBadges();
-  renderGoal();
-  loadCatalogue();
-  renderTaste();
-  bindPaint();
+  try { updateStreak(); } catch (e) {}
+  try { refreshBadges(); } catch (e) {}
+  try { renderGoal(); } catch (e) {}
+  try { loadCatalogue(); } catch (e) {}
+  try { renderTaste(); } catch (e) {}
+  try { bindPaint(); } catch (e) {}
   // Logo + modal logo use the embedded data URI from the previous build step.
   const li = document.getElementById("logo-img");
   if (li && !li.src) li.src = LOGO_URI;
