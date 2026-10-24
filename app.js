@@ -34,8 +34,10 @@ function logoUri() {
 
 /* ---------- XP, levels, streak, daily goal ---------- */
 const LEVELS = [
-  [0, "Mgeni"], [60, "Mwanafunzi"], [150, "Rafiki"], [300, "Mwalimu"], [600, "Mzee"]
+  [0, "Mgeni"], [50, "Mwanafunzi"], [150, "Msomi"], [300, "Mpenda Lugha"], [500, "Shujaa"], [800, "Mzee"]
 ];
+function nextLevel(xp) { for (const [min, n] of LEVELS) if (xp < min) return [min, n]; return null; }
+function levelProgress(xp) { let cur = LEVELS[0]; let nxt = null; for (let i = 0; i < LEVELS.length; i++) { if (xp >= LEVELS[i][0]) { cur = LEVELS[i]; nxt = LEVELS[i + 1] || null; } } if (!nxt) return 100; return Math.round(100 * (xp - cur[0]) / (nxt[0] - cur[0])); }
 const DAILY_GOAL = 30;
 
 function levelFor(xp) {
@@ -77,7 +79,7 @@ function renderGoal() {
 }
 
 /* ---------- views & tabs ---------- */
-const TAB_VIEWS = ["view-home", "view-color", "view-board"];
+const TAB_VIEWS = ["view-home", "view-color", "view-board", "view-dashboard", "view-admin"];
 function show(viewId) {
   document.querySelectorAll(".view").forEach(v => { v.hidden = v.id !== viewId; });
   document.querySelectorAll(".tab").forEach(t => {
@@ -87,6 +89,8 @@ function show(viewId) {
   window.scrollTo(0, 0);
   if (viewId === "view-board") renderBoard();
   if (viewId === "view-color") renderArtGallery();
+  if (viewId === "view-dashboard") renderDashboard();
+  if (viewId === "view-admin") renderAdmin();
 }
 document.querySelectorAll(".tab").forEach(t => {
   t.addEventListener("click", () => show(t.dataset.view));
@@ -278,7 +282,26 @@ function finishStory() {
  * (Swahili today), it is set on the utterance so the device picks the
  * closest matching voice. Real native-speaker recordings will replace
  * this synthetic voice phrase by phrase. */
-function speak(text, lang) {
+function speakRate(text, lang, rate) {
+  if (!("speechSynthesis" in window)) { alert("Speech is not supported in this browser."); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  if (lang) {
+    u.lang = lang;
+    try {
+      const vs = window.speechSynthesis.getVoices();
+      const v = vs.find(v => v.lang && v.lang.toLowerCase().indexOf(lang.slice(0, 2).toLowerCase()) === 0);
+      if (v) u.voice = v;
+    } catch (e) {}
+  }
+  u.rate = rate;
+  window.speechSynthesis.speak(u);
+}
+function speak(text, lang) { speakRate(text, lang, 0.9); }
+function speakSlow(text, lang) { speakRate(text, lang, 0.6); }
+function speakNormal(text, lang) { speakRate(text, lang, 1); }
+// Kept for reference: the original speak() body follows in the next function.
+function speakLegacy(text, lang) {
   if (!("speechSynthesis" in window)) { alert("Speech is not supported in this browser."); return; }
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
@@ -500,15 +523,6 @@ function bindPaint() {
    * one handler per event, no matter how many times this runs. */
   c.onpointerdown = ev => {
     ev.preventDefault();
-    /* DIAGNOSTIC: always draw a magenta dot to prove the handler fires. */
-    try {
-      const dbg = c.getContext("2d");
-      const rr = c.getBoundingClientRect();
-      const dx = (ev.clientX - rr.left) / rr.width * c.width;
-      const dy = (ev.clientY - rr.top) / rr.height * c.height;
-      dbg.fillStyle = "#ff00ff";
-      dbg.beginPath(); dbg.arc(dx, dy, 12, 0, 7); dbg.fill();
-    } catch (e) {}
     if (!artW || !artH || !pctx) return;            // image not ready yet
     try { c.setPointerCapture(ev.pointerId); } catch (e) {}
     const r = c.getBoundingClientRect();
@@ -636,6 +650,12 @@ document.getElementById("btn-save-name").addEventListener("click", () => {
 document.getElementById("btn-hear").addEventListener("click", () => {
   const sc = currentScene(); if (sc && sc.native) speak(sc.native, story._code);
 });
+document.getElementById("btn-listen").addEventListener("click", () => {
+  const sc = currentScene(); if (sc && sc.native) speakNormal(sc.native, story._code);
+});
+document.getElementById("btn-practise").addEventListener("click", () => {
+  const sc = currentScene(); if (sc && sc.native) { speakSlow(sc.native, story._code); const n = document.getElementById("practise-note"); if (n) n.hidden = false; }
+});
 document.getElementById("btn-quit").addEventListener("click", () => {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   show("view-home");
@@ -645,6 +665,75 @@ document.getElementById("brand-home").addEventListener("click", () => show("view
 document.getElementById("btn-start").addEventListener("click", () => {
   document.getElementById("region-boxes").scrollIntoView({ behavior: "smooth" });
 });
+
+
+/* ---------- dashboard ---------- */
+function renderDashboard() {
+  const xp = store.get("mt_xp", 0);
+  const streak = store.get("mt_streak", {count:0}).count;
+  const d = store.get("mt_daily", { date: "", xp: 0 });
+  const todayXp = (d.date === todayKey()) ? d.xp : 0;
+  const nxt = nextLevel(xp);
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set("dash-level", levelFor(xp));
+  set("dash-xp", xp + " XP");
+  set("dash-next", nxt ? (nxt[0] - xp) + " XP to " + nxt[1] : "You reached Mzee, the highest level.");
+  const fill = document.getElementById("dash-fill"); if (fill) fill.style.width = levelProgress(xp) + "%";
+  set("dash-goal", Math.min(todayXp, DAILY_GOAL) + " / " + DAILY_GOAL + " XP today");
+  set("dash-streak", streak + "-day streak. " + (streak ? "Come back tomorrow to keep it alive." : "Start today, then come back tomorrow to keep the flame alive."));
+  set("dash-done", store.get("mt_done", []).length + " stories finished. " + store.get("mt_colored", []).length + " artworks finished.");
+}
+
+/* ---------- admin demo portal (device-local, same decisions as Flask admin) ---------- */
+function adminSeed() {
+  let users = store.get("mt_admin_users", null);
+  if (!users) {
+    users = [
+      { name: "Guest learner", role: "learner", active: true },
+      { name: "Demo contributor", role: "contributor", active: true },
+      { name: "Demo admin", role: "admin", active: true },
+    ];
+    store.set("mt_admin_users", users);
+  }
+  let pending = store.get("mt_admin_pending", null);
+  if (!pending) {
+    pending = [
+      { title: "Amina's Lake Day", language: "Swahili", by: "Demo contributor", status: "pending" },
+      { title: "Otieno's River Song", language: "Dholuo", by: "Demo contributor", status: "pending" },
+    ];
+    store.set("mt_admin_pending", pending);
+  }
+  return { users, pending };
+}
+function renderAdmin() {
+  const { users, pending } = adminSeed();
+  const learners = users.filter(u => u.role === "learner").length;
+  const storiesDone = store.get("mt_done", []).length;
+  const rep = document.getElementById("admin-reports");
+  if (rep) rep.textContent = "Learners: " + learners + ". Scenes completed: " + storiesDone + " stories finished on this device.";
+  const pendEl = document.getElementById("admin-pending");
+  if (pendEl) {
+    pendEl.innerHTML = pending.map((p, i) =>
+      '<p><strong>' + escapeHtml(p.title) + '</strong> (' + escapeHtml(p.language) + ', by ' + escapeHtml(p.by) + ') — ' + escapeHtml(p.status) +
+      (p.status === "pending" ? ' <button data-pending="' + i + '" data-decision="approved">Approve</button><button data-pending="' + i + '" data-decision="rejected">Reject</button>' : '') + '</p>').join("") || "<p>No submissions awaiting review.</p>";
+    pendEl.querySelectorAll("[data-pending]").forEach(b => b.addEventListener("click", () => {
+      const list = store.get("mt_admin_pending", []); list[+b.dataset.pending].status = b.dataset.decision; store.set("mt_admin_pending", list); renderAdmin();
+    }));
+  }
+  const usersEl = document.getElementById("admin-users");
+  if (usersEl) {
+    usersEl.innerHTML = '<table class="admin-table"><tr><th>Name</th><th>Role</th><th>Status</th><th>Action</th></tr>' + users.map((u, i) =>
+      '<tr><td>' + escapeHtml(u.name) + '</td><td>' + escapeHtml(u.role) + '</td><td>' + (u.active ? "Active" : "Deactivated") + '</td><td>' +
+      '<button data-user="' + i + '" data-action="toggle">' + (u.active ? "Deactivate" : "Reactivate") + '</button>' +
+      '<button data-user="' + i + '" data-action="role">Change role</button></td></tr>').join("") + '</table>';
+    usersEl.querySelectorAll("[data-user]").forEach(b => b.addEventListener("click", () => {
+      const list = store.get("mt_admin_users", []); const u = list[+b.dataset.user]; if (!u) return;
+      if (b.dataset.action === "toggle") u.active = !u.active;
+      else u.role = u.role === "learner" ? "contributor" : u.role === "contributor" ? "admin" : "learner";
+      store.set("mt_admin_users", list); renderAdmin();
+    }));
+  }
+}
 
 /* ---------- boot ---------- */
 (function boot() {

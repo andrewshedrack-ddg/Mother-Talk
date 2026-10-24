@@ -1,38 +1,41 @@
-/* MotherTalk — African culture theme ("Kanga & Clay").
- * Design system: East African textile colours (Maasai red, kente gold,
- * savanna green, clay terracotta, kitenge indigo) on warm ivory,
+/* MotherTalk — "Cream & Clay" theme, matching the Flask app on Render.
+ * Design system: cream and brown, woven cultural patterns, calm
+ * well-spaced layout, pill buttons. Palette below is the same as
+ * mothertalk_app/app/static/css/style.css, mapped onto the static
+ * variable names so no layout class has to change. */
+/* Former theme: Kanga & Clay (Maasai red, kente gold, savanna green).
  * mudcloth-inspired pattern details, storybook serif headings,
  * and a calm, open layout with far more breathing room. */
 
 :root {
   /* Cultural palette */
-  --espresso: #1c1108;
-  --espresso-soft: #2a1c10;
-  --paper: #faf5ea;
-  --paper-deep: #f2e8d3;
-  --card: #fffdf7;
-  --ink: #26180c;
-  --ink-soft: #55432c;
-  --muted: #8c7757;
+  --espresso: #2e1c10;
+  --espresso-soft: #3b2416;
+  --paper: #faf3e7;
+  --paper-deep: #f3ead9;
+  --card: #fffaf1;
+  --ink: #33220f;
+  --ink-soft: #6d5a44;
+  --muted: #6d5a44;
   --faint: #bba888;
 
-  --clay: #c2571b;
-  --clay-deep: #9a4212;
-  --clay-soft: #fbe9dc;
+  --clay: #6f4e37;
+  --clay-deep: #54341e;
+  --clay-soft: #f3ead9;
   --red: #a62b25;            /* Maasai shuka red */
   --red-deep: #82201b;
   --red-soft: #f7e3df;
-  --gold: #d9a441;           /* Kente gold */
-  --gold-deep: #a87c22;
-  --gold-soft: #faf0d7;
+  --gold: #c89b6a;           /* Kente gold */
+  --gold-deep: #b07d4f;
+  --gold-soft: #f3ead9;
   --green: #2e7d4f;          /* Savanna green */
   --green-deep: #1f5a37;
   --green-soft: #e2f0e8;
   --indigo: #31597f;         /* Kitenge indigo */
   --indigo-soft: #e4ebf3;
 
-  --line: #e9dcc3;
-  --line-soft: #f2e9d5;
+  --line: #e2d2b8;
+  --line-soft: #e9dcc4;
 
   /* Type scale */
   --fs-hero: clamp(2.1rem, 5.5vw, 3.2rem);
@@ -94,9 +97,9 @@ button:focus-visible, input:focus-visible {
   background:
     repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.14) 0 6px, transparent 6px 12px),
     repeating-linear-gradient(90deg,
-      var(--red) 0 34px, var(--gold) 34px 68px,
-      var(--green) 68px 102px, var(--espresso) 102px 136px,
-      var(--gold) 136px 152px, var(--clay) 152px 186px);
+      var(--espresso) 0 34px, var(--clay) 34px 68px,
+      var(--gold) 68px 102px, var(--paper-deep) 102px 136px,
+      var(--clay) 136px 152px, var(--espresso) 152px 186px);
 }
 
 /* ---------- Header ---------- */
@@ -175,9 +178,9 @@ button:focus-visible, input:focus-visible {
 .hero {
   text-align: center; padding: var(--space-xl) var(--space-md) var(--space-lg);
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(217, 164, 65, 0.22), transparent),
-    repeating-linear-gradient(45deg, rgba(217, 164, 65, 0.05) 0 14px, transparent 14px 28px),
-    repeating-linear-gradient(-45deg, rgba(166, 43, 37, 0.05) 0 14px, transparent 14px 28px),
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200, 155, 106, 0.25), transparent),
+    repeating-linear-gradient(45deg, rgba(200, 155, 106, 0.08) 0 14px, transparent 14px 28px),
+    repeating-linear-gradient(-45deg, rgba(111, 78, 55, 0.08) 0 14px, transparent 14px 28px),
     linear-gradient(175deg, var(--espresso) 0%, #2c1f14 70%, #3a2a18 100%);
   color: #fff; border-radius: var(--radius-lg); margin-top: var(--space-md);
   position: relative; overflow: hidden;
@@ -186,9 +189,9 @@ button:focus-visible, input:focus-visible {
 .hero::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px;
   background: repeating-linear-gradient(90deg,
-    var(--red) 0 34px, var(--gold) 34px 68px,
-    var(--green) 68px 102px, var(--espresso) 102px 136px,
-    var(--gold) 136px 152px, var(--clay) 152px 186px);
+    var(--espresso) 0 34px, var(--clay) 34px 68px,
+      var(--gold) 68px 102px, var(--paper-deep) 102px 136px,
+      var(--clay) 136px 152px, var(--espresso) 152px 186px);
 }
 .hero h1 {
   font-family: var(--serif);
@@ -565,3 +568,15 @@ footer p { margin-bottom: 0.4rem; }
   .goal-card { border-radius: var(--radius-md); flex-wrap: wrap; }
   .section-sub { margin-left: 0; }
 }
+
+/* ---------- Dashboard and Admin (Pages demo, Cream & Clay) ---------- */
+.progress-bar { height: 12px; background: var(--paper-deep); border-radius: var(--radius-pill); overflow: hidden; margin: .5rem 0 1rem; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--clay)); }
+.admin-card, .dash-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1.2rem; margin: 0 0 1.2rem; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.admin-table th, .admin-table td { text-align: left; padding: .5rem .4rem; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.admin-table button, .voice-row button { margin: .15rem .25rem .15rem 0; }
+.voice-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.note-box { background: var(--paper-deep); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; margin: 1rem 0; }
+.hero-art { margin-top: var(--space-md); text-align: center; }
+.hero-art img { max-width: 720px; width: 100%; border-radius: var(--radius-lg); border: 1px solid var(--line); }
