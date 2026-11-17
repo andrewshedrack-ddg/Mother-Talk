@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotherTalk — Write a story</title>
+<meta name="description" content="Write a new story in your language and send it for review.">
+<base href="../../">
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Contributor side: only a logged-in contributor stays here.
+  try {
+    var _r = JSON.parse(localStorage.getItem("mt_role") || '""');
+    if (_r !== "contributor") {
+      var _p = window.location.pathname;
+      window.location.replace(_p.slice(0, _p.indexOf("/frontend/") + 1) + "index.html");
+    }
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="frontend/img/logo.png" alt="MotherTalk logo" class="logo">
+    <div class="brand-text">
+      <span class="brand-name">MotherTalk</span>
+      <span class="brand-tag">Your voice, your ideas, our journey</span>
+    </div>
+  </div>
+  <div class="stats">
+    <span class="role-badge" id="role-badge"></span>
+    <button class="tool" id="btn-logout">Log out</button>
+  </div>
+</header>
+<div class="kente" aria-hidden="true"></div>
+
+<nav class="tabs">
+  <a class="tab" href="frontend/contributor/index.html">My uploads</a>
+  <a class="tab active" href="frontend/contributor/upload.html">Write a story</a>
+</nav>
+
+<main id="app">
+  <section class="view">
+    <h1 class="section-title">Write a story</h1>
+    <p class="section-sub">Three short scenes, each with a quiz. The admin reviews it before learners can play it.</p>
+
+    <div class="form-card" id="upload-form">
+      <div class="field">
+        <label for="f-title">Story title</label>
+        <input type="text" id="f-title" maxlength="60" placeholder="e.g. Amina's Lake Day">
+      </div>
+      <div class="field">
+        <label for="f-language">Language</label>
+        <select id="f-language">
+          <option value="">Pick a language</option>
+          <option>Kikuyu</option>
+          <option>Kamba</option>
+          <option>Swahili</option>
+          <option>Dholuo</option>
+          <option>Luganda</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-country">Country</label>
+        <select id="f-country">
+          <option value="">Pick a country</option>
+          <option>Kenya</option>
+          <option>Uganda</option>
+          <option>Tanzania</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-character">Main character</label>
+        <input type="text" id="f-character" maxlength="30" placeholder="e.g. Amina">
+      </div>
+      <div class="field">
+        <label for="f-description">One-line description</label>
+        <input type="text" id="f-description" maxlength="120" placeholder="What happens in this story?">
+      </div>
+      <div id="scene-fields"></div>
+      <p class="form-error" id="upload-error"></p>
+      <button class="primary" id="btn-submit">Send for review</button>
+      <p class="link-row"><a href="frontend/contributor/index.html">&larr; Back to my uploads</a></p>
+    </div>
+
+    <div class="form-card" id="upload-done" hidden>
+      <h3>Sent for review.</h3>
+      <p id="done-text"></p>
+      <p><a class="primary" href="frontend/contributor/index.html">See my uploads</a></p>
+    </div>
+  </section>
+</main>
+
+<div class="kente" aria-hidden="true"></div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span><strong>MotherTalk</strong> — your voice, your ideas, our journey.</span>
+    </div>
+    <p>Learn African languages through stories, art and play.</p>
+    <p>&copy; 2026 MotherTalk. All rights reserved.</p>
+    <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini.<br>Story phrases are demos and will be reviewed by native speakers.</p>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/roles.js"></script>
+<script>
+  renderRoleBadge();
+  const FLAGS = { Kenya: "ke", Uganda: "ug", Tanzania: "tz" };
+
+  // Three scenes. Each scene: words in the language, what they mean,
+  // a culture note, and one quiz question with three answers.
+  const wrap = document.getElementById("scene-fields");
+  [1, 2, 3].forEach(n => {
+    const box = document.createElement("div");
+    box.innerHTML =
+      '<h3>Scene ' + n + '</h3>' +
+      '<div class="field"><label for="s' + n + '-native">Words in the language</label>' +
+      '<textarea id="s' + n + '-native" placeholder="Write the scene in the language"></textarea></div>' +
+      '<div class="field"><label for="s' + n + '-translation">What it means</label>' +
+      '<textarea id="s' + n + '-translation" placeholder="Translate the scene"></textarea></div>' +
+      '<div class="field"><label for="s' + n + '-culture">Culture note (optional)</label>' +
+      '<input type="text" id="s' + n + '-culture" maxlength="160" placeholder="Something a learner should know"></div>' +
+      '<div class="field"><label for="s' + n + '-question">Quiz question for this scene</label>' +
+      '<input type="text" id="s' + n + '-question" maxlength="120" placeholder="e.g. What did Amina buy at the market?"></div>' +
+      '<div class="field"><label for="s' + n + '-correct">Correct answer</label>' +
+      '<input type="text" id="s' + n + '-correct" maxlength="80"></div>' +
+      '<div class="field"><label for="s' + n + '-wrong1">Wrong answer 1</label>' +
+      '<input type="text" id="s' + n + '-wrong1" maxlength="80"></div>' +
+      '<div class="field"><label for="s' + n + '-wrong2">Wrong answer 2</label>' +
+      '<input type="text" id="s' + n + '-wrong2" maxlength="80"></div>';
+    wrap.appendChild(box);
+  });
+
+  function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ""; }
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  document.getElementById("btn-submit").addEventListener("click", () => {
+    const err = document.getElementById("upload-error");
+    const title = val("f-title"), language = val("f-language"), country = val("f-country");
+    const character = val("f-character"), description = val("f-description");
+    if (!title || !language || !country || !character || !description) {
+      err.textContent = "Please fill in the title, language, country, character and description first.";
+      return;
+    }
+    const scenes = {};
+    for (let n = 1; n <= 3; n++) {
+      const native = val("s" + n + "-native"), translation = val("s" + n + "-translation");
+      const question = val("s" + n + "-question"), correct = val("s" + n + "-correct");
+      const wrong1 = val("s" + n + "-wrong1"), wrong2 = val("s" + n + "-wrong2");
+      if (!native || !translation || !question || !correct || !wrong1 || !wrong2) {
+        err.textContent = "Scene " + n + " is incomplete. Each scene needs its words, translation, quiz question and three answers.";
+        return;
+      }
+      const options = shuffle([correct, wrong1, wrong2]);
+      scenes["s" + n] = {
+        character: character,
+        native: native,
+        translation: translation,
+        culture: val("s" + n + "-culture"),
+        choices: [],
+        quizzes: [{ question: question, options: options, answer: options.indexOf(correct) }]
+      };
+    }
+    const list = getSubmissions();
+    list.push({
+      id: "sub-" + Date.now(),
+      title: title, language: language, country: country,
+      flag: FLAGS[country] || "ke", description: description,
+      by: currentName(), status: "pending",
+      created: new Date().toISOString(),
+      data: { title: title, start: "s1", scenes: scenes }
+    });
+    saveSubmissions(list);
+    document.getElementById("upload-form").hidden = true;
+    document.getElementById("done-text").textContent =
+      '"' + title + '" is with the admin now. You will see the decision on My uploads.';
+    document.getElementById("upload-done").hidden = false;
+    window.scrollTo(0, 0);
+  });
+</script>
+</body>
+</html>

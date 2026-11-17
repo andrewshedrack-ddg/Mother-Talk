@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotherTalk — Create a learner account</title>
+<meta name="description" content="Create a learner account to play stories, answer quizzes and earn XP.">
+<base href="../../">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="frontend/img/logo.png" alt="MotherTalk logo" class="logo">
+    <div class="brand-text">
+      <span class="brand-name">MotherTalk</span>
+      <span class="brand-tag">Your voice, your ideas, our journey</span>
+    </div>
+  </div>
+</header>
+<div class="kente" aria-hidden="true"></div>
+
+<main id="app">
+  <section class="view">
+    <h1 class="section-title">Create a learner account</h1>
+    <p class="section-sub">One account, and your XP, streak and finished stories stay with your name on this device.</p>
+
+    <div class="form-card">
+      <div class="field">
+        <label for="signup-name">Your name</label>
+        <input type="text" id="signup-name" maxlength="20" placeholder="Your name" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="At least 8 characters" autocomplete="off">
+        <p class="hint">At least 8 characters, the same rule as the Flask app.</p>
+      </div>
+      <div class="field">
+        <label for="signup-confirm">Repeat password</label>
+        <input type="password" id="signup-confirm" placeholder="Repeat your password" autocomplete="off">
+      </div>
+      <p class="form-error" id="signup-error"></p>
+      <button class="primary" id="btn-signup">Create account</button>
+      <p class="link-row">Already have an account? <a href="frontend/learner/login.html">Log in as a learner</a>. Or <a href="index.html">go back to the main log in</a>.</p>
+      <p class="note">Demo on this device: learner accounts live in this browser only. The Flask app keeps real accounts in its database instead.</p>
+    </div>
+  </section>
+</main>
+
+<div class="kente" aria-hidden="true"></div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span><strong>MotherTalk</strong> — your voice, your ideas, our journey.</span>
+    </div>
+    <p>Learn African languages through stories, art and play.</p>
+    <p>&copy; 2026 MotherTalk. All rights reserved.</p>
+    <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini.<br>Story phrases are demos and will be reviewed by native speakers.</p>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/roles.js"></script>
+<script>
+  // Learner sign-up, demo version: accounts live in this browser.
+  // New accounts are learners. Only an admin can change a role.
+  function getAccounts() { return store.get("mt_accounts", []); }
+  document.getElementById("btn-signup").addEventListener("click", () => {
+    const name = document.getElementById("signup-name").value.trim().slice(0, 20);
+    const password = document.getElementById("signup-password").value;
+    const confirm = document.getElementById("signup-confirm").value;
+    const err = document.getElementById("signup-error");
+    if (!name) { err.textContent = "Please type your name."; return; }
+    if (password.length < 8) { err.textContent = "Password must be at least 8 characters."; return; }
+    if (password !== confirm) { err.textContent = "The two passwords do not match."; return; }
+    const accs = getAccounts();
+    if (accs.some(a => a.name.toLowerCase() === name.toLowerCase())) {
+      err.textContent = "That name is taken. Pick another name, or log in.";
+      return;
+    }
+    accs.push({ name, password });
+    store.set("mt_accounts", accs);
+    loginAs(name, "learner");
+  });
+</script>
+</body>
+</html>

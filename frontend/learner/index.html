@@ -5,7 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MotherTalk — Learn African Languages Through Stories</title>
 <meta name="description" content="Learn African languages through stories, art and play.">
+<base href="../../">
 <link rel="stylesheet" href="styles.css">
+<script>
+  // Learner side: only a logged-in learner stays here. Anyone else
+  // (or nobody logged in) goes back to the login page at the root.
+  try {
+    var _r = JSON.parse(localStorage.getItem("mt_role") || '""');
+    if (_r !== "learner") {
+      var _p = window.location.pathname;
+      var _root = _p.slice(0, _p.indexOf("/frontend/") + 1);
+      window.location.replace(_root + "index.html");
+    }
+  } catch (e) {}
+</script>
 </head>
 <body>
 
@@ -20,6 +33,8 @@
   <div class="stats">
     <div class="streak" id="streak-badge" title="Day streak">&#128293; 0</div>
     <div class="xp" id="xp-badge" title="Experience points">0 XP</div>
+    <span class="role-badge" id="role-badge"></span>
+    <button class="tool" id="btn-logout">Log out</button>
   </div>
 </header>
 <div class="kente" aria-hidden="true"></div>
@@ -29,7 +44,6 @@
   <button class="tab" data-view="view-color">Colour</button>
   <button class="tab" data-view="view-board">Board</button>
   <button class="tab" data-view="view-dashboard">My progress</button>
-  <button class="tab" data-view="view-admin">Admin</button>
 </nav>
 
 <main id="app">
@@ -42,8 +56,8 @@
       <button class="cta" id="btn-start">Start a story</button>
       <div class="hero-stats">
         <div><strong>6</strong><span>stories</span></div>
-        <div><strong>3</strong><span>languages</span></div>
-        <div><strong>2</strong><span>countries</span></div>
+        <div><strong>5</strong><span>languages</span></div>
+        <div><strong>3</strong><span>countries</span></div>
         <div><strong>30</strong><span>artworks</span></div>
       </div>
     </div>
@@ -60,6 +74,7 @@
     <h2 class="section-title">Stories by country</h2>
     <p class="section-sub">Pick a country, then step into one of its stories.</p>
     <div id="region-boxes"></div>
+    <p class="note"><a href="frontend/learner/languages.html">Browse stories by language</a></p>
 
     <h2 class="section-title">Taste the languages</h2>
     <p class="section-sub">Tap any phrase to hear how it sounds.</p>
@@ -154,31 +169,6 @@
     </div>
   </section>
 
-  <!-- ADMIN: demo portal matching the Chapter 4 design (processes 2.0 and 5.0) -->
-  <section id="view-admin" class="view" hidden>
-    <h2 class="section-title">Admin portal</h2>
-    <p class="section-sub">Approve story submissions, manage accounts and read reports, as in the design model.</p>
-    <div class="note-box">
-      <strong>Demo on this device.</strong> GitHub Pages has no server or shared database, so this portal
-      manages demo accounts and submissions saved in this browser only. It demonstrates exactly the same
-      decisions as the Flask admin panel: approve or reject, deactivate or reactivate, change role, and
-      the Learners plus Scenes completed report. The full Flask admin panel, with a real database,
-      stays in <code>mothertalk_app/</code> in this repository for local running and marking.
-    </div>
-    <div class="admin-card">
-      <h3>Reports</h3>
-      <p id="admin-reports">Learners: 0. Scenes completed: 0 stories finished on this device.</p>
-    </div>
-    <div class="admin-card">
-      <h3>Story submissions awaiting review</h3>
-      <div id="admin-pending"></div>
-    </div>
-    <div class="admin-card">
-      <h3>Accounts</h3>
-      <div id="admin-users"></div>
-    </div>
-  </section>
-
   <!-- STORY PLAYER -->
   <section id="view-player" class="view" hidden>
     <button class="back" id="btn-quit">&larr; Stories</button>
@@ -257,6 +247,13 @@
 <script src="coloring-art-4j.js"></script>
 <script src="coloring-art-4k.js"></script>
 <script src="coloring-art-4l.js"></script>
-<script src="app.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/stories.js"></script>
+<script src="js/colouring.js"></script>
+<script src="js/board.js"></script>
+<script src="js/roles.js"></script>
+<script src="js/main.js"></script>
+<script>try { renderRoleBadge(); } catch (e) {}</script>
 </body>
 </html>

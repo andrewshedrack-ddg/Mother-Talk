@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotherTalk — Contributor</title>
+<meta name="description" content="Contributor side: write new stories in your language and send them for review.">
+<base href="../../">
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Contributor side: only a logged-in contributor stays here.
+  try {
+    var _r = JSON.parse(localStorage.getItem("mt_role") || '""');
+    if (_r !== "contributor") {
+      var _p = window.location.pathname;
+      window.location.replace(_p.slice(0, _p.indexOf("/frontend/") + 1) + "index.html");
+    }
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="frontend/img/logo.png" alt="MotherTalk logo" class="logo">
+    <div class="brand-text">
+      <span class="brand-name">MotherTalk</span>
+      <span class="brand-tag">Your voice, your ideas, our journey</span>
+    </div>
+  </div>
+  <div class="stats">
+    <span class="role-badge" id="role-badge"></span>
+    <button class="tool" id="btn-logout">Log out</button>
+  </div>
+</header>
+<div class="kente" aria-hidden="true"></div>
+
+<nav class="tabs">
+  <a class="tab active" href="frontend/contributor/index.html">My uploads</a>
+  <a class="tab" href="frontend/contributor/upload.html">Write a story</a>
+</nav>
+
+<main id="app">
+  <section class="view">
+    <h1 class="section-title">My uploads</h1>
+    <p class="section-sub">Stories you wrote, and what the admin decided about each one.</p>
+    <div class="note-box">
+      <strong>How it works.</strong> You write a story and send it for review. The admin reads it and approves or rejects it. An approved story appears for learners to play, with your name on it. A rejected story stays here so you can see the decision.
+    </div>
+    <div id="my-list"></div>
+    <p><a class="primary" href="frontend/contributor/upload.html">Write a new story</a></p>
+  </section>
+</main>
+
+<div class="kente" aria-hidden="true"></div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span><strong>MotherTalk</strong> — your voice, your ideas, our journey.</span>
+    </div>
+    <p>Learn African languages through stories, art and play.</p>
+    <p>&copy; 2026 MotherTalk. All rights reserved.</p>
+    <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini.<br>Story phrases are demos and will be reviewed by native speakers.</p>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/roles.js"></script>
+<script>
+  renderRoleBadge();
+  const list = document.getElementById("my-list");
+  const mine = getSubmissions().filter(s => s.by === currentName());
+  if (!mine.length) {
+    list.innerHTML = "<p>You have not uploaded a story yet. Your first story starts with the button below.</p>";
+  } else {
+    list.innerHTML = mine.map(s =>
+      '<div class="admin-card"><h3>' + escapeHtml(s.title) + ' <span class="status status-' + escapeHtml(s.status) + '">' + escapeHtml(s.status) + '</span></h3>' +
+      "<p>" + escapeHtml(s.language) + " · " + escapeHtml(s.country) + " · sent " + escapeHtml((s.created || "").slice(0, 10)) + "</p>" +
+      "<p>" + escapeHtml(s.description) + "</p></div>").join("");
+  }
+</script>
+</body>
+</html>

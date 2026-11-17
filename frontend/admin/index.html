@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotherTalk — Admin</title>
+<meta name="description" content="Admin side: approve story submissions, manage accounts and read reports.">
+<base href="../../">
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Admin side: only a logged-in admin stays here.
+  try {
+    var _r = JSON.parse(localStorage.getItem("mt_role") || '""');
+    if (_r !== "admin") {
+      var _p = window.location.pathname;
+      window.location.replace(_p.slice(0, _p.indexOf("/frontend/") + 1) + "index.html");
+    }
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="frontend/img/logo.png" alt="MotherTalk logo" class="logo">
+    <div class="brand-text">
+      <span class="brand-name">MotherTalk</span>
+      <span class="brand-tag">Your voice, your ideas, our journey</span>
+    </div>
+  </div>
+  <div class="stats">
+    <span class="role-badge" id="role-badge"></span>
+    <button class="tool" id="btn-logout">Log out</button>
+  </div>
+</header>
+<div class="kente" aria-hidden="true"></div>
+
+<nav class="tabs">
+  <a class="tab active" href="frontend/admin/index.html">Admin portal</a>
+</nav>
+
+<main id="app">
+  <section class="view">
+    <h1 class="section-title">Admin portal</h1>
+    <p class="section-sub">Approve story submissions, manage accounts and read reports, as in the design model.</p>
+    <div class="note-box">
+      <strong>Demo on this device.</strong> GitHub Pages has no server or shared database, so this portal
+      manages accounts and submissions saved in this browser only. It makes exactly the same
+      decisions as the Flask admin panel: approve or reject, deactivate or reactivate, change role, and
+      the Learners plus Scenes completed report. The full Flask admin panel, with a real database,
+      stays in <code>mothertalk_app/</code> in this repository for local running and marking.
+    </div>
+
+    <div class="admin-card">
+      <h3>Reports</h3>
+      <p id="admin-reports"></p>
+    </div>
+
+    <div class="admin-card">
+      <h3>Story submissions awaiting review</h3>
+      <div id="admin-pending"></div>
+    </div>
+
+    <div class="admin-card">
+      <h3>Accounts</h3>
+      <div id="admin-users"></div>
+    </div>
+  </section>
+</main>
+
+<div class="kente" aria-hidden="true"></div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span><strong>MotherTalk</strong> — your voice, your ideas, our journey.</span>
+    </div>
+    <p>Learn African languages through stories, art and play.</p>
+    <p>&copy; 2026 MotherTalk. All rights reserved.</p>
+    <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini.<br>Story phrases are demos and will be reviewed by native speakers.</p>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/roles.js"></script>
+<script>
+  renderRoleBadge();
+
+  // Demo accounts and demo submissions, seeded once on this device.
+  function adminSeed() {
+    let users = store.get("mt_admin_users", null);
+    if (!users) {
+      users = [
+        { name: "Guest learner", role: "learner", active: true },
+        { name: "Demo contributor", role: "contributor", active: true },
+        { name: "Demo admin", role: "admin", active: true }
+      ];
+      store.set("mt_admin_users", users);
+    }
+    let pending = store.get("mt_admin_pending", null);
+    if (!pending) {
+      pending = [
+        { title: "Amina's Lake Day", language: "Swahili", by: "Demo contributor", status: "pending" },
+        { title: "Otieno's River Song", language: "Dholuo", by: "Demo contributor", status: "pending" }
+      ];
+      store.set("mt_admin_pending", pending);
+    }
+    return { users, pending };
+  }
+
+  function renderAdmin() {
+    const { users, pending } = adminSeed();
+    const learners = users.filter(u => u.role === "learner").length;
+    const storiesDone = store.get("mt_done", []).length;
+    document.getElementById("admin-reports").textContent =
+      "Learners: " + learners + ". Scenes completed: " + storiesDone + " stories finished on this device.";
+
+    // Pending queue: the demo submissions plus every real contributor
+    // upload still waiting. Approving one publishes it to learners.
+    const submitted = getSubmissions().filter(s => s.status === "pending");
+    const pendEl = document.getElementById("admin-pending");
+    let html = "";
+    pending.forEach((p, i) => {
+      html += "<p><strong>" + escapeHtml(p.title) + "</strong> (" + escapeHtml(p.language) + ", by " + escapeHtml(p.by) + ") — " + escapeHtml(p.status) +
+        (p.status === "pending" ? ' <button data-demo="' + i + '" data-decision="approved">Approve</button><button data-demo="' + i + '" data-decision="rejected">Reject</button>' : "") + "</p>";
+    });
+    submitted.forEach(s => {
+      html += "<p><strong>" + escapeHtml(s.title) + "</strong> (" + escapeHtml(s.language) + ", by " + escapeHtml(s.by) + ") — pending" +
+        ' <button data-sub="' + escapeHtml(s.id) + '" data-decision="approved">Approve</button><button data-sub="' + escapeHtml(s.id) + '" data-decision="rejected">Reject</button></p>';
+    });
+    pendEl.innerHTML = html || "<p>No submissions awaiting review.</p>";
+    pendEl.querySelectorAll("[data-demo]").forEach(b => b.addEventListener("click", () => {
+      const list = store.get("mt_admin_pending", []);
+      list[+b.dataset.demo].status = b.dataset.decision;
+      store.set("mt_admin_pending", list);
+      renderAdmin();
+    }));
+    pendEl.querySelectorAll("[data-sub]").forEach(b => b.addEventListener("click", () => {
+      const list = getSubmissions();
+      const item = list.find(s => s.id === b.dataset.sub);
+      if (!item) return;
+      item.status = b.dataset.decision;
+      saveSubmissions(list);
+      if (b.dataset.decision === "approved") {
+        const approved = getApprovedStories();
+        if (!approved.some(a => a.id === item.id)) {
+          approved.push({
+            id: item.id, title: item.title, language: item.language,
+            country: item.country, flag: item.flag, description: item.description,
+            data: item.data
+          });
+          saveApprovedStories(approved);
+        }
+      }
+      renderAdmin();
+    }));
+
+    const usersEl = document.getElementById("admin-users");
+    usersEl.innerHTML = '<table class="admin-table"><tr><th>Name</th><th>Role</th><th>Status</th><th>Action</th></tr>' + users.map((u, i) =>
+      "<tr><td>" + escapeHtml(u.name) + "</td><td>" + escapeHtml(u.role) + "</td><td>" + (u.active ? "Active" : "Deactivated") + "</td><td>" +
+      '<button data-user="' + i + '" data-action="toggle">' + (u.active ? "Deactivate" : "Reactivate") + "</button> " +
+      '<button data-user="' + i + '" data-action="role">Change role</button></td></tr>').join("") + "</table>";
+    usersEl.querySelectorAll("[data-user]").forEach(b => b.addEventListener("click", () => {
+      const list = store.get("mt_admin_users", []);
+      const u = list[+b.dataset.user];
+      if (!u) return;
+      if (b.dataset.action === "toggle") u.active = !u.active;
+      else u.role = u.role === "learner" ? "contributor" : u.role === "contributor" ? "admin" : "learner";
+      store.set("mt_admin_users", list);
+      renderAdmin();
+    }));
+  }
+  renderAdmin();
+</script>
+</body>
+</html>
