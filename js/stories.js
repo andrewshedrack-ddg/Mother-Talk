@@ -19,7 +19,7 @@ function renderTaste() {
   const grid = document.getElementById("taste-grid");
   if (!grid) return;
   grid.innerHTML = "";
-  TASTE.forEach(t => {
+  TASTE.filter(t => FIRST_LANGUAGES.includes(t.lang)).forEach(t => {
     const card = document.createElement("button");
     card.className = "taste-card";
     card.innerHTML =
@@ -31,6 +31,11 @@ function renderTaste() {
     grid.appendChild(card);
   });
 }
+
+// Two languages first: Swahili and Kikuyu. The other story files
+// stay in data/ for later, and the filter below is the only place
+// the choice is made, so adding a language back is one line.
+const FIRST_LANGUAGES = ["Swahili", "Kikuyu"];
 
 // Real flag images: emoji flags break on Windows.
 function flagImg(code, cls) {
@@ -53,7 +58,9 @@ const REGION_ORDER = ["Kenya", "Uganda", "Tanzania"];
 async function loadCatalogue() {
   const res = await fetch("data/stories.json");
   catalogue = await res.json();
+  catalogue = catalogue.filter(s => FIRST_LANGUAGES.includes(s.language));
   getApprovedStories().forEach(a => {
+    if (!FIRST_LANGUAGES.includes(a.language)) return;
     if (!catalogue.some(s => s.id === a.id)) {
       catalogue.push({
         id: a.id, title: a.title, language: a.language,

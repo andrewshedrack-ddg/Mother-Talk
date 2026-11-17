@@ -7,16 +7,6 @@
 <meta name="description" content="Browse MotherTalk stories by language.">
 <base href="../../">
 <link rel="stylesheet" href="styles.css">
-<script>
-  // Learner side: only a logged-in learner stays here.
-  try {
-    var _r = JSON.parse(localStorage.getItem("mt_role") || '""');
-    if (_r !== "learner") {
-      var _p = window.location.pathname;
-      window.location.replace(_p.slice(0, _p.indexOf("/frontend/") + 1) + "index.html");
-    }
-  } catch (e) {}
-</script>
 </head>
 <body>
 
@@ -29,14 +19,13 @@
     </div>
   </div>
   <div class="stats">
-    <span class="role-badge" id="role-badge"></span>
-    <button class="tool" id="btn-logout">Log out</button>
+    <a class="tool" href="frontend/learner/login.html">Log in</a>
   </div>
 </header>
 <div class="kente" aria-hidden="true"></div>
 
 <nav class="tabs">
-  <a class="tab" href="frontend/learner/index.html">Stories</a>
+  <a class="tab" href="index.html">Stories</a>
   <a class="tab active" href="frontend/learner/languages.html">Languages</a>
 </nav>
 
@@ -45,7 +34,7 @@
     <h1 class="section-title">Languages</h1>
     <p class="section-sub">Pick a language, then step into one of its stories.</p>
     <div id="lang-list"></div>
-    <p class="link-row"><a href="frontend/learner/index.html">&larr; Back to stories</a></p>
+    <p class="link-row"><a href="index.html">&larr; Back to stories</a></p>
   </section>
 </main>
 
@@ -57,7 +46,7 @@
     </div>
     <p>Learn African languages through stories, art and play.</p>
     <p>&copy; 2026 MotherTalk. All rights reserved.</p>
-    <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini.<br>Story phrases are demos and will be reviewed by native speakers.</p>
+    <p class="footer-credit">Story phrases are demos and will be reviewed by native speakers.</p>
   </div>
 </footer>
 
@@ -66,9 +55,9 @@
 <script>
   // Languages page: group the catalogue by language. Stories the
   // admin approved from contributors appear under their language too.
-  renderRoleBadge();
-  const FLAGS = { Kikuyu: "ke", Kamba: "ke", Swahili: "tz", Dholuo: "ke", Luganda: "ug" };
-  const COUNTRIES = { Kikuyu: "Kenya", Kamba: "Kenya", Swahili: "Kenya", Dholuo: "Kenya", Luganda: "Uganda" };
+  const FIRST_LANGUAGES = ["Swahili", "Kikuyu"];
+  const FLAGS = { Kikuyu: "ke", Swahili: "tz" };
+  const COUNTRIES = { Kikuyu: "Kenya", Swahili: "Kenya" };
   function flagImg(code) {
     return '<img class="flag" src="https://flagcdn.com/w40/' + code + '.png" alt="" loading="lazy">';
   }
@@ -76,6 +65,9 @@
     const list = document.getElementById("lang-list");
     let catalogue = [];
     try { catalogue = await (await fetch("data/stories.json")).json(); } catch (e) {}
+    // Two languages first: Swahili and Kikuyu. The other story files
+    // stay in data/ for later.
+    catalogue = catalogue.filter(s => FIRST_LANGUAGES.includes(s.language));
     getApprovedStories().forEach(a => {
       if (!catalogue.some(s => s.id === a.id)) {
         catalogue.push({ id: a.id, title: a.title, language: a.language, country: a.country, flag: a.flag, description: a.description, community: true });
@@ -103,7 +95,7 @@
     });
     list.querySelectorAll("[data-play]").forEach(b => b.addEventListener("click", () => {
       store.set("mt_play_story", b.dataset.play);
-      window.location.assign("frontend/learner/index.html");
+      window.location.assign("index.html");
     }));
   }
   render();

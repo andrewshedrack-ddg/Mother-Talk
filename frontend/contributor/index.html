@@ -7,16 +7,6 @@
 <meta name="description" content="Contributor side: write new stories in your language and send them for review.">
 <base href="../../">
 <link rel="stylesheet" href="styles.css">
-<script>
-  // Contributor side: only a logged-in contributor stays here.
-  try {
-    var _r = JSON.parse(localStorage.getItem("mt_role") || '""');
-    if (_r !== "contributor") {
-      var _p = window.location.pathname;
-      window.location.replace(_p.slice(0, _p.indexOf("/frontend/") + 1) + "index.html");
-    }
-  } catch (e) {}
-</script>
 </head>
 <body>
 
@@ -40,6 +30,22 @@
   <a class="tab" href="frontend/contributor/upload.html">Write a story</a>
 </nav>
 
+<div id="role-gate" hidden>
+  <div class="form-card">
+    <h2 class="section-title">Contributor side</h2>
+    <p class="section-sub">This side is not linked from the main site. Type your name to continue.</p>
+    <form id="gate-form">
+      <div class="field">
+        <label for="gate-name">Your name</label>
+        <input type="text" id="gate-name" maxlength="20" placeholder="Your name" autocomplete="off">
+      </div>
+      <p class="form-error" id="gate-error"></p>
+      <button class="primary" type="submit">Enter as contributor</button>
+    </form>
+    <p class="link-row"><a href="index.html">&larr; Back to the main site</a></p>
+  </div>
+</div>
+
 <main id="app">
   <section class="view">
     <h1 class="section-title">My uploads</h1>
@@ -60,14 +66,14 @@
     </div>
     <p>Learn African languages through stories, art and play.</p>
     <p>&copy; 2026 MotherTalk. All rights reserved.</p>
-    <p class="footer-credit">Built by Andrew Shedrack Anderson &amp; Anita Mwaura Njuguini.<br>Story phrases are demos and will be reviewed by native speakers.</p>
+    <p class="footer-credit">Story phrases are demos and will be reviewed by native speakers.</p>
   </div>
 </footer>
 
 <script src="js/storage.js"></script>
 <script src="js/roles.js"></script>
 <script>
-  renderRoleBadge();
+  gateRole("contributor");
   const list = document.getElementById("my-list");
   const mine = getSubmissions().filter(s => s.by === currentName());
   if (!mine.length) {

@@ -4,9 +4,11 @@
 // (localStorage), the same way the learner's name and XP are kept.
 // The Flask app does the same checks against its database instead.
 //
-// Every side's page loads this file (after storage.js) and calls
-// requireRole() for its own side. The login page at the site root
-// is the only place a role is chosen.
+// The learner side IS the main site: the home page at the root is
+// public, no login needed. The contributor and admin sides are
+// hidden: they are not linked from the learner pages, they open only
+// by direct link, and each one asks for a name on its own page
+// (gateRole below) before it shows anything.
 
 const ROLES = ["learner", "contributor", "admin"];
 
@@ -20,6 +22,7 @@ function siteRoot() {
 }
 
 function roleHome(role) {
+  if (role === "learner") return siteRoot() + "index.html";
   return siteRoot() + "frontend/" + role + "/index.html";
 }
 
@@ -34,14 +37,34 @@ function loginAs(name, role) {
   window.location.replace(roleHome(role));
 }
 
-// Call at the top of every side's page. If the stored role is not
-// this side's role, send the visitor back to the login page.
-function requireRole(role) {
-  if (currentRole() !== role) {
-    window.location.replace(siteRoot() + "index.html");
-    return false;
+// Call at the top of a hidden side's page (contributor or admin).
+// If the stored role is already this side's role, show the page.
+// If not, hide the page and show the name gate on that page instead:
+// the visitor types a name, becomes that role on this device, and
+// the page reloads. Nothing is linked from the learner pages, so
+// the gate is only reached by the direct link.
+function gateRole(role) {
+  const gate = document.getElementById("role-gate");
+  const app = document.getElementById("app");
+  if (currentRole() === role) {
+    if (gate) gate.hidden = true;
+    renderRoleBadge();
+    return true;
   }
-  return true;
+  if (app) app.style.display = "none";
+  if (gate) {
+    gate.hidden = false;
+    const form = document.getElementById("gate-form");
+    const input = document.getElementById("gate-name");
+    const err = document.getElementById("gate-error");
+    if (form) form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const name = input ? input.value.trim() : "";
+      if (!name) { if (err) err.textContent = "Please type your name."; return; }
+      loginAs(name, role);
+    });
+  }
+  return false;
 }
 
 function logout() {
