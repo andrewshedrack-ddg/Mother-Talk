@@ -1,3 +1,4 @@
+# audio: serves the recorded MP3 files (Wanjiru story) to logged-in learners.
 import os
 from flask import Blueprint, send_from_directory, current_app, abort
 from flask_login import login_required

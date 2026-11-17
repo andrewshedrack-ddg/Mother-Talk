@@ -1,10 +1,14 @@
+# auth: sign up, log in and log out. This is the only place passwords are checked.
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
+from app.extensions import limiter
 from app.models import User
 
 bp = Blueprint("auth", __name__)
+
+MIN_PASSWORD_LENGTH = 8
 
 
 def roles_required(*roles):
@@ -29,6 +33,9 @@ def register():
         if not username or not password:
             flash("Username and password are required.")
             return render_template("auth/register.html")
+        if len(password) < MIN_PASSWORD_LENGTH:
+            flash(f"Password must be at least {MIN_PASSWORD_LENGTH} characters.")
+            return render_template("auth/register.html")
         if User.query.filter_by(username=username).first():
             flash("That username is taken.")
             return render_template("auth/register.html")
@@ -42,6 +49,7 @@ def register():
 
 
 @bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute", methods=["POST"])
 def login():
     if request.method == "POST":
         user = User.query.filter_by(username=request.form.get("username", "").strip()).first()
@@ -50,6 +58,12 @@ def login():
                 flash("This account has been deactivated. Please contact the administrator.")
                 return render_template("auth/login.html")
             login_user(user)
+            # Each role lands on its own side: learners on stories,
+            # contributors on their uploads, admins on the panel.
+            if user.role == "admin":
+                return redirect(url_for("admin.panel"))
+            if user.role == "contributor":
+                return redirect(url_for("contribute.upload"))
             return redirect(url_for("story.select"))
         flash("Wrong username or password.")
     return render_template("auth/login.html")

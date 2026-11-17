@@ -1,0 +1,7 @@
+# MotherTalk Flask app — never commit the database, secrets or venv.
+instance/
+venv/
+__pycache__/
+*.pyc
+*.bak-*
+.env

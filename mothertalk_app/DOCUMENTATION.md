@@ -98,7 +98,10 @@ Pages (HTML):
 | `GET, POST /contribute/` | Contributor, admin | Upload story script and audio (FR-08, FR-09) |
 | `GET /admin/` | Admin | Approvals, user roles, popularity and score reports (FR-14, FR-15, FR-35, FR-36) |
 | `POST /admin/approve/<id>`, `POST /admin/reject/<id>`, `POST /admin/role/<user_id>` | Admin | Content and user management |
-| `GET /audio/<file>` | Public | Native-speaker MP3 delivery (FR-19, FR-25) |
+| `GET /audio/<file>` | Learner (login required) | Native-speaker MP3 delivery (FR-19, FR-25) |
+| `GET /colouring` | Learner | Colouring Studio gallery: 30 artworks (FR-46) |
+| `GET /colouring/<id>` | Learner | Painting page: fill + brush on layered canvas (FR-47) |
+| `POST /colouring/finish` | Learner | Save a finished painting; +15 XP the first time (FR-48) |
 
 JSON:
 
@@ -121,6 +124,8 @@ Implemented in `app/gamification.py`, always derived from QUIZ_RESULT rows,
 never stored as a drifting counter:
 
 - XP: 1 quiz point = 10 XP.
+- Colouring: finishing an artwork = 15 XP, once per artwork per learner
+  (the ARTWORK table's unique constraint enforces the once-only rule).
 - Levels: Mgeni (0 XP), Mwanafunzi (50), Msomi (150), Mpenda Lugha (300),
   Shujaa (500), Mzee (800).
 - Daily goal: 30 XP per day.
@@ -168,12 +173,15 @@ never stored as a drifting counter:
 | FR-34 | Learner view progress dashboard | Done | `/dashboard` |
 | FR-35 | Administrator view story popularity report | Done | Admin panel, from PROGRESS counts |
 | FR-36 | Administrator view score analysis report | Done | Admin panel, from QUIZ_RESULT aggregates |
+| FR-46 | Learner view colouring artworks | Done | `colouring.gallery` — 30 artworks from `data/colouring.json` |
+| FR-47 | Learner paint artwork (fill and brush) | Done | `colouring.studio` + `static/js/colour.js` (layered canvas, flood fill, brush) |
+| FR-48 | System store finished artwork and award XP | Done | `colouring.finish` + ARTWORK table; +15 XP once per artwork per learner |
 
 ## 7. Non-functional requirements (Chapter 4)
 
 | NFR | How the build addresses it |
 |---|---|
-| Security | Hashed passwords, session auth, role checks on every protected route, only approved content is public |
+| Security | Hashed passwords (min 8 chars), session auth, role checks on every protected route, only approved content is public, CSRF tokens on every HTML form, rate limiting on login and API routes, no demo accounts ship with a fresh install, the app refuses to start without a real SECRET_KEY |
 | Performance | Stories are small JSON files; scenes load one at a time; MP3s are compressed (about 12 KB per second) |
 | Availability | PWA service worker caches pages, stories and audio for offline use |
 | Usability | Mobile-first cultural theme, one-tap choices, a story is playable within a minute of opening the app |
@@ -191,17 +199,64 @@ pip install -r requirements.txt
 python run.py
 ```
 
-First run creates `instance/mothertalk.db` and seeds demo accounts
-(learner / learn123, contributor / contrib123, admin / admin123), the six
-catalogue stories as approved, and AUDIO_RECORDING rows for the MP3 clips
-on disk, with real file sizes.
+First run creates `instance/mothertalk.db` and seeds the six catalogue
+stories as approved, and AUDIO_RECORDING rows for the MP3 clips on
+disk, with real file sizes. No demo accounts are seeded: the old
+learner/contributor/admin accounts with published passwords were a
+security hole. Create the first admin with:
+
+```bash
+flask --app run.py create-admin
+```
+
+It prompts for a username and a (hidden, confirmed) password.
 
 ## 9. Honest limitations of this build
 
 - Demo story phrases await native-speaker review (stated in the app footer).
 - Recorded audio currently covers the flagship Kikuyu story; other stories
   gain clips through the contributor flow.
-- Every functional requirement in the design (36 of 36) is implemented;
-  see the coverage table in section 7.
+- Every functional requirement in the design that this build covers
+  (the original 36 plus FR-46/47/48, Colouring Studio) is implemented;
+  see the coverage table in section 6. FR-37–45 and FR-49 are not
+  addressed by this build — check Chapter 4 for their wording before
+  claiming them.
 - The SQLite database suits the MVP; the models migrate to a server
   database without code changes through SQLAlchemy.
+
+## 10. Security and deployment (PythonAnywhere)
+
+Rate limiting (Flask-Limiter, in-memory store — right for the free
+tier's single worker): 200 requests/day and 60/minute per IP by
+default on every route; login POSTs are limited to 5 attempts/minute
+per IP, so password guessing is throttled; the colouring finish
+endpoint is limited to 30/minute. A burst past a limit gets HTTP 429.
+PythonAnywhere itself also shields the app from large floods; a small
+Flask app cannot stop a huge DDoS on its own, and this build does not
+claim to.
+
+SECRET_KEY: the app refuses to start when the SECRET_KEY environment
+variable is missing, unless MOTHERTALK_ALLOW_DEV_SECRET=1 is set for
+local development. Set it in the PythonAnywhere WSGI file (see
+`wsgi.py` for the exact file content). Session cookies are HttpOnly,
+SameSite=Lax, and Secure in production.
+
+Deploy steps (free "Beginner" plan):
+
+1. Create a free account at pythonanywhere.com (no card). Note the
+   username — the site will be `https://<username>.pythonanywhere.com`.
+2. In a PythonAnywhere Bash console:
+   `git clone https://github.com/andrewshedrack-ddg/Mother-Talk.git`
+   (the repo root contains `mothertalk_app/`).
+3. `mkvirtualenv --python=python3.12 mothertalk`, then
+   `pip install -r Mother-Talk/mothertalk_app/requirements.txt`.
+4. Delete `mothertalk_app/instance/mothertalk.db` (and any `.bak`
+   files) so first run re-seeds cleanly.
+5. Web tab → Add a new web app → Flask → Python 3.12 → set the
+   virtualenv path. Replace the generated WSGI file with the content
+   in `wsgi.py` (your username, a long random SECRET_KEY).
+6. Reload the web app, open the URL, then create the first admin:
+   in a Bash console, `cd Mother-Talk/mothertalk_app && flask --app run.py create-admin`.
+7. Optional: add a static-files mapping `/static/` →
+   `.../mothertalk_app/app/static/` for performance (Flask also
+   serves it itself).

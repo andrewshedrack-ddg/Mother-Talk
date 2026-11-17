@@ -1,8 +1,11 @@
 """Data model. Mirrors the ERD in the Chapter 4 design document
 (System Analysis and Design): USER, STORY, AUDIO_RECORDING, PROGRESS,
-QUIZ_RESULT, with the same relationships: a contributor uploads stories,
+QUIZ_RESULT, ARTWORK, with the same relationships: a contributor uploads stories,
 a story contains audio recordings, PROGRESS resolves the many-to-many
 between learner and story, and QUIZ_RESULT stores every marked quiz.
+ARTWORK is the designed store for Colouring Studio saves (process 6.0,
+FR-46/47/48, store D6): one row per learner and artwork, holding the
+finished painting so the +15 XP award can never be given twice.
 
 Documented implementation choices (kept honest, on purpose):
 - story_id is TEXT (the story slug, e.g. "wanjiru"), not INTEGER,
@@ -104,3 +107,22 @@ class QuizResult(db.Model):
     score = db.Column(db.Integer, nullable=False)
     total = db.Column(db.Integer, nullable=False)              # total_questions
     created = db.Column(db.DateTime, default=datetime.utcnow)  # date_taken
+
+
+class Artwork(db.Model):
+    """ERD: ARTWORK (store D6, process 6.0 Manage Colouring Artwork).
+    One row per learner and colouring artwork: the finished painting is
+    stored as a PNG data URL so it can be shown back in the gallery.
+    The unique constraint is what makes the +15 XP award once-only:
+    a learner can finish an artwork many times, but only the first
+    finish creates a row and earns XP (FR-46/47/48)."""
+    __tablename__ = "artwork"
+    __table_args__ = (db.UniqueConstraint("user_id", "artwork_id"),)
+
+    id = db.Column(db.Integer, primary_key=True)               # artwork_id (row id)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    artwork_id = db.Column(db.String(64), nullable=False)     # e.g. "baobab"
+    title = db.Column(db.String(128), default="")
+    image_data = db.Column(db.Text, default="")  # finished painting, PNG data URL
+    xp_awarded = db.Column(db.Integer, default=15)
+    created = db.Column(db.DateTime, default=datetime.utcnow)

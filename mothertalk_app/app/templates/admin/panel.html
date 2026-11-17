@@ -8,9 +8,11 @@
   <p><strong>{{ s.title }}</strong> — {{ s.language }}<br>
   <small>{{ s.description }}</small></p>
   <form class="inline-form" method="post" action="{{ url_for('admin.approve', story_id=s.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit">Approve</button>
   </form>
   <form class="inline-form" method="post" action="{{ url_for('admin.reject', story_id=s.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="secondary">Reject</button>
   </form>
   {% else %}
@@ -29,6 +31,7 @@
       <td>{{ "Active" if u.is_active else "Deactivated" }}</td>
       <td>
         <form class="roleform" method="post" action="{{ url_for('admin.set_role', user_id=u.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <select name="role">
             <option value="learner" {% if u.role=='learner' %}selected{% endif %}>learner</option>
             <option value="contributor" {% if u.role=='contributor' %}selected{% endif %}>contributor</option>
@@ -41,10 +44,12 @@
         {% if u.id != current_user.id %}
           {% if u.is_active %}
           <form class="inline-form" method="post" action="{{ url_for('admin.deactivate', user_id=u.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="secondary">Deactivate</button>
           </form>
           {% else %}
           <form class="inline-form" method="post" action="{{ url_for('admin.activate', user_id=u.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Reactivate</button>
           </form>
           {% endif %}

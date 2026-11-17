@@ -372,3 +372,26 @@ footer { background: var(--brown-900); color: #e8dcc6; }
   .hero .cta { width: auto; }
   #choices button { width: 100%; }
 }
+
+/* ---------- Colouring Studio (process 6.0) ---------- */
+.art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 1rem; }
+.art-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: block; text-decoration: none; transition: transform .14s, box-shadow .14s; }
+.art-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.art-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #fff; }
+.art-info { padding: .7rem .85rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.art-info h3 { font-size: .95rem; margin: 0; }
+.xp-tag { flex-shrink: 0; font-size: .72rem; font-weight: 700; background: var(--sand-soft); color: var(--coffee); border-radius: 999px; padding: .2rem .6rem; border: 1px solid var(--line); }
+.xp-tag.done { background: #e3f0e6; color: #2e7d4f; border-color: #bcd9c8; }
+.toolbar { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; margin: .75rem 0; }
+.wheel-row { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; }
+#color-wheel { width: 148px; height: 148px; border-radius: 50%; cursor: crosshair; box-shadow: var(--shadow-sm); border: 3px solid #fff; touch-action: none; flex-shrink: 0; }
+.wheel-controls { display: flex; flex-direction: column; gap: .5rem; }
+.color-preview { display: inline-block; width: 34px; height: 34px; border-radius: 8px; border: 2px solid var(--line); vertical-align: middle; }
+.wheel-label { font-size: .9rem; color: var(--ink-soft); display: flex; align-items: center; gap: .5rem; }
+.wheel-label input[type="range"] { accent-color: var(--caramel); }
+.color-hex { font-family: ui-monospace, monospace; font-size: .85rem; color: var(--ink-soft); font-weight: 600; }
+.tool-row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.tool-row button.active, #tool-fill.active, #tool-brush.active { background: var(--caramel); border-color: var(--caramel); color: var(--brown-950); }
+#paint-canvas { width: 100%; border-radius: var(--radius); border: 2px solid var(--line); background: #fff; touch-action: none; cursor: crosshair; display: block; box-shadow: var(--shadow-sm); }
+.tip { text-align: center; color: var(--ink-soft); font-size: .9rem; margin: .8rem 0; }
+.studio-actions { display: flex; gap: .8rem; margin-top: .4rem; flex-wrap: wrap; }

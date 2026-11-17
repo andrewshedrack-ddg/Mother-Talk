@@ -1,17 +1,19 @@
 """Duolingo-style motivation layer: XP, levels, streaks and a daily goal.
 
-One quiz point = 10 XP. Finishing every quiz in a scene also banks the
-points in the QuizResult table, so XP is always derived from real work in
-the database, never stored as a number that can drift.
+One quiz point = 10 XP. Finishing a colouring artwork = 15 XP, once per
+artwork per learner (the ARTWORK table's unique constraint is what makes
+it once-only). XP is always derived from real work in the database,
+never stored as a number that can drift.
 """
 from datetime import date, timedelta
 
-from app.models import QuizResult
+from app.models import Artwork, QuizResult
 
 XP_PER_POINT = 10
+XP_PER_ARTWORK = 15
 DAILY_GOAL_XP = 30
 
-# (minimum XP, Swahili title) — climb from guest to elder.
+# (minimum XP, Swahili title). Climb from guest to elder.
 LEVELS = [
     (0, "Mgeni"),          # guest
     (50, "Mwanafunzi"),    # student
@@ -22,9 +24,14 @@ LEVELS = [
 ]
 
 
+def artwork_xp(user_id):
+    """XP from finished colouring artworks: 15 XP each, once per artwork."""
+    return sum(a.xp_awarded for a in Artwork.query.filter_by(user_id=user_id).all())
+
+
 def total_xp(user_id):
     points = sum(a.score for a in QuizResult.query.filter_by(user_id=user_id).all())
-    return points * XP_PER_POINT
+    return points * XP_PER_POINT + artwork_xp(user_id)
 
 
 def level_for(xp):
@@ -62,8 +69,11 @@ def streak_days(user_id):
 
 def xp_today(user_id):
     today = date.today()
-    return sum(a.score for a in QuizResult.query.filter_by(user_id=user_id).all()
-               if a.created.date() == today) * XP_PER_POINT
+    quiz_xp = sum(a.score for a in QuizResult.query.filter_by(user_id=user_id).all()
+                  if a.created.date() == today) * XP_PER_POINT
+    art_xp = sum(a.xp_awarded for a in Artwork.query.filter_by(user_id=user_id).all()
+                 if a.created.date() == today)
+    return quiz_xp + art_xp
 
 
 def summary(user_id):

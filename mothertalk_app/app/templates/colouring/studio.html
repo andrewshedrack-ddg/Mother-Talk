@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a class="btn secondary" href="{{ url_for('colouring.gallery') }}">&larr; All artworks</a></p>
+<h2 id="studio-title">{{ art.title }}</h2>
+{% if done %}
+<p class="section-sub">You already finished this one and earned your +15 XP. Painting it again is just for fun — no extra XP.</p>
+{% else %}
+<p class="section-sub">Tap a colour, then tap a shape to fill it, or switch to the brush and paint freehand. Finish it to earn +15 XP.</p>
+{% endif %}
+<div class="toolbar">
+  <div class="wheel-row">
+    <canvas id="color-wheel" width="148" height="148"></canvas>
+    <div class="wheel-controls">
+      <div class="wheel-label">Colour <span id="color-preview" class="color-preview"></span> <span id="color-hex" class="color-hex"></span></div>
+      <label class="wheel-label">Lightness <input id="lightness" type="range" min="20" max="90" value="55"></label>
+      <div class="tool-row">
+        <button id="tool-fill" class="active" type="button">Fill</button>
+        <button id="tool-brush" type="button">Brush</button>
+        <label class="wheel-label">Size <input id="brush-size" type="range" min="4" max="32" value="10"></label>
+      </div>
+    </div>
+  </div>
+</div>
+<canvas id="paint-canvas"></canvas>
+<p class="tip">Paint stays inside the lines: the black outlines are always drawn on top of your colour.</p>
+<div class="studio-actions">
+  <button id="btn-undo" class="secondary" type="button">Undo</button>
+  <button id="btn-clear" class="secondary" type="button">Clear</button>
+  <button id="btn-save-art" class="secondary" type="button">Download</button>
+  <button id="btn-finish-art" type="button">Finish artwork (+15 XP)</button>
+</div>
+<p id="finish-msg" class="section-sub" hidden></p>
+{% endblock %}
+{% block scripts %}
+<script>
+const ART_ID = {{ art.id | tojson }};
+const ART_TITLE = {{ art.title | tojson }};
+const ART_SRC = {{ url_for('static', filename='img/' + art.file) | tojson }};
+const FINISH_URL = {{ url_for('colouring.finish') | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/colour.js') }}"></script>
+{% endblock %}

@@ -6,6 +6,7 @@
   <p>One account, many stories, many languages.</p>
 </div>
 <form method="post" class="auth">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <label>Username <input name="username" required autocomplete="username"></label>
   <label>Password <input type="password" name="password" required autocomplete="new-password"></label>
   <button type="submit">Create account</button>

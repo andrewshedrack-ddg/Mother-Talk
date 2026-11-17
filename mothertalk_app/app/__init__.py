@@ -1,7 +1,11 @@
 """MotherTalk Flask app. One blueprint per SSAD process (Chapter 3)."""
+import click
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+from app.extensions import csrf, limiter
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -12,10 +16,33 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
+    # Behind PythonAnywhere the real client IP arrives in X-Forwarded-For;
+    # ProxyFix makes request.remote_addr (and therefore rate-limit keys)
+    # use it instead of the proxy's own address. Harmless with no proxy.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
+    # A missing SECRET_KEY is a hard stop, not a silent fallback: the old
+    # default "dev-only-change-me" shipped in the repo. Local development
+    # may opt out explicitly with MOTHERTALK_ALLOW_DEV_SECRET=1.
+    import os
+    if not app.config["SECRET_KEY"]:
+        if os.environ.get("MOTHERTALK_ALLOW_DEV_SECRET") == "1":
+            app.logger.warning(
+                "SECRET_KEY is not set, using the dev-only default. "
+                "Never run in production like this.")
+            app.config["SECRET_KEY"] = "dev-only-change-me"
+        else:
+            raise RuntimeError(
+                "SECRET_KEY is not set. Set the SECRET_KEY environment "
+                "variable (or MOTHERTALK_ALLOW_DEV_SECRET=1 for local "
+                "development only).")
+
     db.init_app(app)
     login_manager.init_app(app)
+    limiter.init_app(app)
+    csrf.init_app(app)
 
-    from app.models import User, Story  # noqa: F401  (registers models)
+    from app.models import User, Story, Artwork  # noqa: F401  (registers models)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -29,6 +56,7 @@ def create_app():
     from app.contribute import bp as contribute_bp
     from app.admin import bp as admin_bp
     from app.api import bp as api_bp
+    from app.colouring import bp as colouring_bp
 
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -37,8 +65,35 @@ def create_app():
     app.register_blueprint(assessment_bp, url_prefix="/api/assessment")
     app.register_blueprint(contribute_bp, url_prefix="/contribute")
     app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(colouring_bp)
+
+    # CSRF: the HTML forms are protected by Flask-WTF. The JSON API
+    # endpoints below are exempt because they only accept JSON bodies.
+    # A cross-site form POST cannot produce one, so such a request fails
+    # closed with 400. (colouring.finish is exempted in its own module.)
+    csrf.exempt(app.view_functions["story.record_choice"])
+    csrf.exempt(app.view_functions["assessment.submit"])
+
+    @app.cli.command("create-admin")
+    @click.option("--username", prompt=True, help="Admin username.")
+    @click.option("--password", prompt=True, hide_input=True,
+                  confirmation_prompt=True, help="Admin password.")
+    def create_admin(username, password):
+        """Create the first admin account. Run once after first deploy."""
+        if User.query.filter_by(username=username).first():
+            click.echo(f"User '{username}' already exists.")
+            return
+        user = User(username=username, role="admin")
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        click.echo(f"Admin '{username}' created. Keep the password safe.")
 
     with app.app_context():
+        # SQLite lives in the instance folder; create it or a fresh host
+        # (PythonAnywhere, a new laptop) fails with "unable to open database file".
+        import os
+        os.makedirs(app.instance_path, exist_ok=True)
         db.create_all()
         ensure_user_active_column()
         seed_demo_data()
@@ -58,18 +113,14 @@ def ensure_user_active_column():
 
 
 def seed_demo_data():
-    """First-run seed: demo accounts and the demo Kikuyu story catalogue entry."""
-    from app.models import User, Story
-    if User.query.first():
+    """First-run seed: the story catalogue and the audio rows for clips
+    on disk. No demo accounts are seeded any more. The old
+    learner/contributor/admin accounts with published passwords
+    (learn123/contrib123/admin123) were a security hole. Create the first
+    admin with: flask --app run.py create-admin"""
+    from app.models import Story
+    if Story.query.first():
         return  # already seeded, never run twice
-    learner = User(username="learner", role="learner")
-    learner.set_password("learn123")
-    contributor = User(username="contributor", role="contributor")
-    contributor.set_password("contrib123")
-    admin = User(username="admin", role="admin")
-    admin.set_password("admin123")
-    db.session.add_all([learner, contributor, admin])
-    db.session.flush()  # assigns user ids for the foreign keys below
     # Seed the whole story catalogue from data/catalogue.json so the
     # database and the JSON story files can never drift apart.
     import json
@@ -87,7 +138,7 @@ def seed_demo_data():
             status="approved",
             level="Beginner",
             script_file=entry["id"] + ".json",
-            contributor_id=contributor.id,
+            contributor_id=None,
         ))
     db.session.flush()
     # Seed AUDIO_RECORDING rows for clips that exist on disk (real sizes).
@@ -102,7 +153,7 @@ def seed_demo_data():
             if Story.query.get(story_id):
                 db.session.add(AudioRecording(
                     story_id=story_id,
-                    contributor_id=contributor.id,
+                    contributor_id=None,
                     scene_reference=scene_ref,
                     file_name=file_name,
                     file_size_kb=round(os.path.getsize(

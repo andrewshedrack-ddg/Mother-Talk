@@ -4,6 +4,7 @@
 <p>Upload a story script as JSON plus the native-speaker MP3 clips it uses.
 An admin reviews every upload before learners can see it.</p>
 <form method="post" enctype="multipart/form-data" class="auth form upload">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <label>Story title <input name="title" required></label>
   <label>Language
     <select name="language" required>
