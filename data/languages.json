@@ -1,0 +1,94 @@
+{
+  "languages": [
+    {
+      "code": "dholuo",
+      "name": "Dholuo",
+      "country": "Kenya",
+      "flag": "ke",
+      "greeting": {
+        "phrase": "Misawa, jadak!",
+        "meaning": "\"Greetings, traveller!\" Ochieng waves from his wooden boat."
+      },
+      "stories": [
+        {
+          "id": "luo",
+          "title": "Ochieng's Fishing Morning",
+          "description": "Join Ochieng on Lake Victoria: boats, tilapia and blessings."
+        }
+      ]
+    },
+    {
+      "code": "kamba",
+      "name": "Kamba",
+      "country": "Kenya",
+      "flag": "ke",
+      "greeting": {
+        "phrase": "Wîmwega, mûeni!",
+        "meaning": "\"How are you, visitor!\" A warm Kamba morning greeting."
+      },
+      "stories": [
+        {
+          "id": "kamba",
+          "title": "Mutiso's Harvest Day",
+          "description": "Help Mutiso bring in the harvest: greetings, counting and sharing."
+        }
+      ]
+    },
+    {
+      "code": "kikuyu",
+      "name": "Kikuyu",
+      "country": "Kenya",
+      "flag": "ke",
+      "greeting": {
+        "phrase": "Wĩmwega, mũgeni!",
+        "meaning": "\"How are you, visitor!\" A warm morning greeting."
+      },
+      "stories": [
+        {
+          "id": "wanjiru",
+          "title": "Wanjiru's Market Day",
+          "description": "Spend a day with Wanjiru: greetings at sunrise, shopping at the market, goodbye at sunset."
+        }
+      ]
+    },
+    {
+      "code": "luganda",
+      "name": "Luganda",
+      "country": "Uganda",
+      "flag": "ug",
+      "greeting": {
+        "phrase": "Oli otya, mugeni?",
+        "meaning": "\"How are you, visitor?\" Nakato greets you with a bright smile."
+      },
+      "stories": [
+        {
+          "id": "luganda",
+          "title": "Nakato's Kampala Market",
+          "description": "Brave Kampala's busy markets with Nakato."
+        }
+      ]
+    },
+    {
+      "code": "swahili",
+      "name": "Swahili",
+      "country": "Kenya and Tanzania",
+      "flag": "ke",
+      "greeting": {
+        "phrase": "Habari yako, mgeni!",
+        "meaning": "\"How are you, guest!\" A warm Swahili welcome."
+      },
+      "stories": [
+        {
+          "id": "mombasa",
+          "title": "Amina's Mombasa Day",
+          "description": "A day with Amina: Fort Jesus, coconuts and the ocean."
+        },
+        {
+          "id": "zanzibar",
+          "title": "Zanzibar Spice Adventure",
+          "description": "Smell the cloves on Zanzibar's spice farms with Zuhura."
+        }
+      ]
+    }
+  ]
+}

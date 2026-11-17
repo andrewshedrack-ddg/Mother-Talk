@@ -1,0 +1,154 @@
+{
+  "artworks": [
+    {
+      "id": "mask",
+      "title": "Tribal Mask",
+      "file": "colouring/mask.webp"
+    },
+    {
+      "id": "baobab",
+      "title": "Baobab Savanna",
+      "file": "colouring/baobab.webp"
+    },
+    {
+      "id": "adinkra",
+      "title": "Adinkra Symbols",
+      "file": "colouring/adinkra.webp"
+    },
+    {
+      "id": "elephant",
+      "title": "Savanna Elephant",
+      "file": "colouring/elephant.webp"
+    },
+    {
+      "id": "drums",
+      "title": "Djembe Drums",
+      "file": "colouring/drums.webp"
+    },
+    {
+      "id": "ndebele",
+      "title": "Ndebele Pattern",
+      "file": "colouring/ndebele.webp"
+    },
+    {
+      "id": "lion",
+      "title": "Lion King",
+      "file": "colouring/lion.webp"
+    },
+    {
+      "id": "giraffe",
+      "title": "Giraffe & Acacia",
+      "file": "colouring/giraffe.webp"
+    },
+    {
+      "id": "zebra",
+      "title": "Zebra",
+      "file": "colouring/zebra.webp"
+    },
+    {
+      "id": "rhino",
+      "title": "Rhino",
+      "file": "colouring/rhino.webp"
+    },
+    {
+      "id": "leopard",
+      "title": "Leopard",
+      "file": "colouring/leopard.webp"
+    },
+    {
+      "id": "eagle",
+      "title": "Fish Eagle",
+      "file": "colouring/eagle.webp"
+    },
+    {
+      "id": "flamingo",
+      "title": "Flamingos",
+      "file": "colouring/flamingo.webp"
+    },
+    {
+      "id": "croc",
+      "title": "Crocodile",
+      "file": "colouring/croc.webp"
+    },
+    {
+      "id": "hippo",
+      "title": "Hippo",
+      "file": "colouring/hippo.webp"
+    },
+    {
+      "id": "ostrich",
+      "title": "Ostrich",
+      "file": "colouring/ostrich.webp"
+    },
+    {
+      "id": "meerkat",
+      "title": "Meerkats",
+      "file": "colouring/meerkat.webp"
+    },
+    {
+      "id": "chameleon",
+      "title": "Chameleon",
+      "file": "colouring/chameleon.webp"
+    },
+    {
+      "id": "shield",
+      "title": "Maasai Shield",
+      "file": "colouring/shield.webp"
+    },
+    {
+      "id": "village",
+      "title": "Village Huts",
+      "file": "colouring/village.webp"
+    },
+    {
+      "id": "dhow",
+      "title": "Dhow Boat",
+      "file": "colouring/dhow.webp"
+    },
+    {
+      "id": "kente",
+      "title": "Kente Pattern",
+      "file": "colouring/kente.webp"
+    },
+    {
+      "id": "mudcloth",
+      "title": "Mudcloth Pattern",
+      "file": "colouring/mudcloth.webp"
+    },
+    {
+      "id": "kilimanjaro",
+      "title": "Kilimanjaro",
+      "file": "colouring/kilimanjaro.webp"
+    },
+    {
+      "id": "kalimba",
+      "title": "Kalimba",
+      "file": "colouring/kalimba.webp"
+    },
+    {
+      "id": "necklace",
+      "title": "Beaded Necklace",
+      "file": "colouring/necklace.webp"
+    },
+    {
+      "id": "baskets",
+      "title": "Market Baskets",
+      "file": "colouring/baskets.webp"
+    },
+    {
+      "id": "tinga",
+      "title": "TingaTinga Fish",
+      "file": "colouring/tinga.webp"
+    },
+    {
+      "id": "gangan",
+      "title": "Talking Drum",
+      "file": "colouring/gangan.webp"
+    },
+    {
+      "id": "crane",
+      "title": "Crowned Crane",
+      "file": "colouring/crane.webp"
+    }
+  ]
+}

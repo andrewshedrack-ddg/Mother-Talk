@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="section-title">Choose a story</h2>
+<p class="section-sub">Stories from Kenya, Uganda and Tanzania. Finish the quizzes to earn XP.</p>
+{% if languages|length > 1 %}
+<div class="langchips" id="chips">
+  <button class="active" data-lang="all">All</button>
+  {% for lang in languages %}<button data-lang="{{ lang }}">{{ lang }}</button>{% endfor %}
+</div>
+{% endif %}
+<div class="cards">
+{% for s in stories %}
+  <a class="card" data-lang="{{ s.language }}" href="{{ url_for('story.play', story_id=s.id) }}">
+    {% if s.cover %}<img class="cover" src="{{ url_for('static', filename=s.cover) }}" alt="{{ s.title }}">{% endif %}
+    <div class="pad">
+      <h2>{{ s.title }}</h2>
+      <span class="lang">{{ s.language }}{% if s.country %} &middot; {{ s.country }}{% endif %}</span>
+      {% if s.description %}<p class="desc">{{ s.description }}</p>{% endif %}
+      {% set got, total = progress[s.id] %}
+      <div class="bar"><div style="width:{{ (100*got/total)|round(0) if total else 0 }}%"></div></div>
+      <small>{{ got }}/{{ total }} quiz points</small>
+    </div>
+  </a>
+{% else %}
+  <p>No stories yet. Ask a contributor to upload one, or an admin to approve it.</p>
+{% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+// Language picker chips: filter story cards without a page reload.
+document.querySelectorAll("#chips button").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll("#chips button").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    var lang = btn.getAttribute("data-lang");
+    document.querySelectorAll(".card").forEach(function(card) {
+      card.style.display = (lang === "all" || card.getAttribute("data-lang") === lang) ? "" : "none";
+    });
+  });
+});
+</script>
+{% endblock %}

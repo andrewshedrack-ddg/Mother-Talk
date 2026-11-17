@@ -1,126 +1,114 @@
 # MotherTalk
 
-A story-driven visual-novel web app for learning indigenous African
-languages, built for a DBIT IS project at Strathmore University.
-Learners play short stories in the language, answer a quiz after each
-scene, colour art and earn XP. Contributors write new stories, an
-admin reviews them, and approved stories appear for learners to play.
+**Learn a language by living a story.**
 
-Two languages first: **Swahili and Kikuyu**. The other story files
-stay in `data/` for later; the choice is made in one place
-(`FIRST_LANGUAGES` in `js/stories.js` and
-`frontend/learner/languages.html`).
+MotherTalk is a story-driven web app that teaches indigenous African languages the way children actually learn them: by living inside stories. Learners step into illustrated tales from Kenya, Uganda and Tanzania, hear real phrases, make choices that branch the plot, answer quizzes, earn XP, protect daily streaks and climb a leaderboard, the proven Duolingo loop, rebuilt around African storytelling.
 
-## How the files are arranged
+Live demo (static build): https://andrewshedrack-ddg.github.io/Mother-Talk/
+This repository folder is the full-stack Flask application: backend, database, API and pages.
 
-Frontend pages first, then the shared code, then the story data, then
-the backend and its database:
+---
 
-- `index.html` — the main site. The learner home: stories, Colouring
-  Studio, leaderboard and My progress. Public, no login needed.
-- `frontend/learner/` — the other public learner pages: `login.html`
-  and `signup.html` (learner accounts on this device) and
-  `languages.html` (stories by language). The old
-  `frontend/learner/index.html` only redirects to the main page now.
-- `frontend/contributor/` — the contributor side, hidden: `index.html`
-  (my uploads and their status) and `upload.html` (three scenes, each
-  with a quiz). Not linked from the learner pages; it opens by direct
-  link and asks for a name on its own page.
-- `frontend/admin/` — the admin side, hidden: `index.html` (approve or
-  reject submissions, manage accounts, read reports). Same as the
-  contributor side: direct link only, with its own name gate.
-- `styles.css` — the shared look for every page: Duolingo-lively,
-  bright green 3D buttons, big rounded type, responsive down to small
-  phones.
-- `js/` — the app code, one job per file: `storage.js` (saving on the
-  device), `progress.js` (XP, levels, streak, daily goal),
-  `stories.js` (story player, quizzes, speech), `colouring.js`
-  (Colouring Studio), `board.js` (leaderboard, progress), `roles.js`
-  (the three sides: login, name gates, submissions),
-  `main.js` (tabs, buttons, startup). Pages inside `frontend/` set
-  `<base href="../../">`, so every relative path in them (styles,
-  scripts, story data) is written from the site root, and works both
-  on GitHub Pages and on a local server.
-- `data/` — the story catalogue (`stories.json`) and story files.
-  Stories are plain JSON:
-  `{"title": ..., "start": "s1", "scenes": {"s1": {...}, ...}}`.
-  Each scene has a character, native text, translation, an optional
-  culture note, a list of choices, and a quiz with three options.
-  The learner side only shows Swahili and Kikuyu for now.
-- `coloring-art-1.js`, `coloring-art-2.js` — colouring artworks
-  (embedded images).
-- `frontend/img/` — logo and hero art.
-- `mothertalk_app/` — the Flask version with user accounts, a real
-  database, roles, rate limiting and CSRF protection. The full
-  admin panel lives there. Deployment steps are in its
-  `DOCUMENTATION.md`.
-- `mothertalk_app/instance/mothertalk.db` — the SQLite database
-  (created when the Flask app runs; not kept in the repository).
-- `backend/` — an older Flask attempt, kept for reference. The live
-  backend is `mothertalk_app/`.
-- `app.js` — the old single-file app, no longer used (replaced by
-  `js/`). Kept so nothing that still references it breaks.
-- `VSCODE_GUIDE.md` — how to run this project and update it from
-  GitHub using only the VS Code terminal.
+## The problem
 
-## How the three sides talk to each other
+- A language dies somewhere in the world roughly every two weeks, and Africa holds a huge share of the world's living languages.
+- UNESCO estimates 40% of people worldwide do not have access to education in a language they speak or understand.
+- Mainstream language apps teach global languages. Indigenous African languages are almost entirely absent, so a generation is growing up unable to speak with its own grandparents.
 
-A contributor's upload is saved as "pending". The admin sees it in
-the pending queue and approves or rejects it. An approved story is
-published, and the learner side adds it to the story list, where it
-can be played like any built-in story. On the demo site this runs on
-localStorage (`mt_contrib_submissions` and `mt_approved_stories`); the
-Flask app does the same flow through its database.
+## The solution
 
-The hidden sides are not linked anywhere on the learner pages. Their
-addresses are:
+Interactive visual-novel stories in Kikuyu, Kamba, Swahili, Dholuo and Luganda, written as JSON, voiced by native speakers, and wrapped in a game loop (XP, levels, streaks, daily goals, leaderboard) that keeps learners returning daily. Content is data, not code: a new story or language ships by adding a JSON file.
 
-- Contributor: `frontend/contributor/index.html`
-- Admin: `frontend/admin/index.html`
+## What is inside
 
-Each one asks for a name the first time it opens on a device, and
-remembers it after that.
+- **Full Flask backend** — blueprints mapped one-to-one to the system's design processes: auth, story engine, audio, assessment, contribute, admin, plus a public JSON API.
+- **Real database model** — SQLite via SQLAlchemy implementing the designed ERD exactly: `USER`, `STORY`, `AUDIO_RECORDING`, `PROGRESS`, `QUIZ_RESULT`.
+- **Languages API** — `/api/languages`, `/api/stories`, `/api/leaderboard`, `/api/me`. The pages and any future mobile app read the same endpoints; nothing about a language is typed twice.
+- **Duolingo-style motivation** — XP (1 quiz point = 10 XP), six levels from *Mgeni* (guest) to *Mzee* (elder), a 30 XP daily goal, day streaks, and a public leaderboard.
+- **Colouring Studio** — 30 African line-art artworks to paint (fill + brush), saved per learner; finishing one earns +15 XP, once per artwork.
+- **Roles and safety** — learners, contributors and admins; passwords hashed with Werkzeug (min 8 chars); every protected page checks its role; only admin-approved stories reach learners; CSRF tokens on every form; login and API routes are rate-limited; no demo accounts ship with a fresh install and the app refuses to start without a real SECRET_KEY.
+- **PWA** — installable, with a service worker that caches stories and audio for offline play.
+- **Content ready to grow** — 6 stories, 5 languages, 3 countries, native-speaker MP3s for the flagship Kikuyu story.
 
-## Features
+## Quickstart
 
-- **Stories**: six built-in stories across five languages (Swahili
-  and Kikuyu shown for now). Each scene has its native text,
-  English translation, a culture note, choices that change what
-  happens next, and a quiz.
-- **Colouring Studio**: 30 artworks to paint by fill or brush.
-  Finished pictures give +15 XP, once per picture, and can be saved.
-- **Leaderboard**: device-local top learners with names, XP and levels
-  (Swahili level titles from Mgeni to Mzee).
-- **Speech**: the Web Speech API reads each scene aloud (Swahili
-  `sw-KE`; other languages use the device default voice). Native
-  speaker review of the phrases is still open.
-- **Progress**: daily streak, 30 XP daily goal and per-story progress,
-  all kept in localStorage. No server needed.
-
-## Running it locally
-
-From the repository root:
-
-```sh
-python -m http.server 8000
+```bash
+cd mothertalk_app
+python -m venv venv
+venv\Scripts\activate        # Windows (source venv/bin/activate on Linux/macOS)
+pip install -r requirements.txt
+MOTHERTALK_ALLOW_DEV_SECRET=1 python run.py   # local dev only
 ```
 
-Then open <http://localhost:8000> in a browser. The full
-step-by-step for VS Code (clone, run, pull new work, push your own
-changes) is in `VSCODE_GUIDE.md` in this repository.
+Open http://127.0.0.1:5000 — the database is created and seeded automatically on first run.
 
-## Stories
+No demo accounts are seeded (the old published-password accounts were
+a security hole). Create the first admin with:
 
-To add a story, use the contributor side: write it in the upload form
-and let the admin approve it. Or add it to `data/stories.json` by
-hand, following the structure of an existing story. Stories are
-language-specific: the Kikuyu story has the only audio in the project
-(three MP3s).
+```bash
+flask --app run.py create-admin
+```
 
-## Status
+It prompts for a username and a password. For any public deployment,
+set a real SECRET_KEY in the environment instead of the dev flag —
+the app refuses to start without one. See `wsgi.py` for the
+PythonAnywhere setup.
 
-- Live demo: <https://andrewshedrack-ddg.github.io/Mother-Talk/>
-- Backend: Flask 3, SQLite, local only until deployment. The demo
-  site has no server; learner accounts and submissions live in the
-  browser only, and the demo login stores learner passwords in plain
-  text. The Flask app hashes them properly.
+## API at a glance
+
+| Endpoint | What it returns |
+|---|---|
+| `GET /api/languages` | Every language, with a greeting and its stories, from `data/languages.json` |
+| `GET /api/languages/<code>` | One language and its stories |
+| `GET /api/stories` | The story catalogue (metadata) |
+| `GET /api/stories/<id>` | One full story script (scenes, choices, quizzes) |
+| `GET /api/leaderboard` | Top 10 learners by XP |
+| `GET /api/me` | Signed-in learner's XP, level, streak and daily goal |
+| `GET /api/story/<id>/scene/<scene>` | One scene for the story player |
+| `POST /api/choice` | Record a story choice into PROGRESS |
+| `POST /api/assessment/submit` | Mark a quiz, store a QUIZ_RESULT |
+| `GET /colouring` | Colouring Studio gallery (30 artworks) |
+| `GET /colouring/<id>` | One artwork's painting page |
+| `POST /colouring/finish` | Save a finished painting; +15 XP the first time |
+
+Full details: see `DOCUMENTATION.md`.
+
+## Project structure
+
+```
+mothertalk_app/
+  run.py                 local dev entry point ONLY (never for deployment)
+  wsgi.py                production entry point (PythonAnywhere, gunicorn)
+  config.py              configuration (paths, database, session cookies)
+  app/
+    __init__.py          app factory + first-run seeding + create-admin command
+    extensions.py        rate limiter + CSRF protection
+    models.py            the ERD as SQLAlchemy models
+    gamification.py      XP, levels, streaks, daily goal
+    auth/                register, login, role checks (Process 1.0)
+    story/               landing, story engine, dashboard (Processes 3.0, 5.0)
+    audio/               native-speaker MP3 serving (Process 3.0)
+    assessment/          quiz marking API (Process 4.0)
+    contribute/          contributor uploads (Process 2.0)
+    admin/               approvals and reports (Processes 2.0, 5.0)
+    colouring/           Colouring Studio gallery + painting + XP (Process 6.0)
+    api/                 public JSON API (languages, stories, board)
+    templates/           Jinja2 pages (African culture theme)
+    static/              CSS, JS, PWA manifest + service worker
+  stories/               story scripts as JSON (one file per story)
+  data/                  catalogue.json + languages.json + colouring.json (single source of truth)
+  audio/                 native-speaker MP3 clips
+  instance/              SQLite database (created on first run)
+```
+
+## Roadmap
+
+- **Now** — MVP: 6 stories, 5 languages, audio, quizzes, gamification, Colouring Studio, API, PWA, rate limiting and hardened security.
+- **Next** — native-speaker recordings for every scene, 20+ stories, review of all demo phrases by native speakers, pilot with mother-tongue classes in schools.
+- **Later** — community submissions from elders, offline language packs, mobile app reading the same API, more regions and languages.
+
+## Team
+
+Built by **Andrew Shedrack Anderson** and **Anita Mwaura Njuguini** — DBIT, Strathmore University. Information Systems project, September to December 2026.
+
+*Story phrases in the current build are demos and will be reviewed by native speakers before any public launch.*
