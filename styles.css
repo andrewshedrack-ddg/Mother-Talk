@@ -112,7 +112,7 @@ button:focus-visible, input:focus-visible {
 }
 .brand { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
 .logo {
-  width: 46px; height: 46px; border-radius: 50%;
+  size: 2.5rem; width: 2.5rem; height: 2.5rem; border-radius: 50%;
   object-fit: cover; border: 2px solid var(--gold); background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -567,6 +567,9 @@ footer p { margin-bottom: 0.4rem; }
   .tab { flex: 1; }
   .goal-card { border-radius: var(--radius-md); flex-wrap: wrap; }
   .section-sub { margin-left: 0; }
+  .logo{
+    width: 2.5rem;
+  }
 }
 
 /* ---------- Dashboard and Admin (Pages demo, Cream & Clay) ---------- */
