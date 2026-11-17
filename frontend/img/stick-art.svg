@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+<g stroke="#6f4e37" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.10">
+
+<!-- Baobab tree, top left -->
+<g>
+  <path d="M78 172 L86 92 M118 172 L110 92" />
+  <path d="M98 92 L62 52 M98 92 L96 38 M98 92 L138 54 M98 92 L126 34" />
+  <path d="M78 172 L66 186 M118 172 L130 186" />
+</g>
+<!-- Sun, top right -->
+<g>
+  <circle cx="402" cy="58" r="17" />
+  <path d="M402 30 L402 18 M402 86 L402 98 M374 58 L362 58 M430 58 L442 58
+           M382 38 L374 30 M422 38 L430 30 M382 78 L374 86 M422 78 L430 86" />
+</g>
+<!-- Birds -->
+<g>
+  <path d="M40 62 q7 -7 14 0 q7 -7 14 0" />
+  <path d="M210 46 q6 -6 12 0 q6 -6 12 0" />
+  <path d="M330 96 q6 -6 12 0 q6 -6 12 0" />
+</g>
+<!-- Person carrying a pot, centre left -->
+<g>
+  <circle cx="180" cy="208" r="9" />
+  <path d="M180 217 L180 282" />
+  <path d="M180 236 L163 206 M180 236 L197 206" />
+  <path d="M180 282 L167 326 M180 282 L193 326" />
+  <path d="M166 198 Q180 186 194 198" />
+  <path d="M166 198 L194 198" />
+</g>
+<!-- Giraffe, right -->
+<g>
+  <path d="M342 182 L402 182" />
+  <path d="M398 182 L412 122" />
+  <circle cx="416" cy="116" r="7" />
+  <path d="M412 110 L408 100 M418 110 L422 100" />
+  <path d="M352 182 L348 252 M368 182 L366 252 M388 182 L390 252 M400 182 L404 252" />
+  <path d="M342 182 L330 212" />
+  <circle cx="362" cy="192" r="2.5" fill="#6f4e37" stroke="none" />
+  <circle cx="382" cy="188" r="2.5" fill="#6f4e37" stroke="none" />
+  <circle cx="372" cy="200" r="2.5" fill="#6f4e37" stroke="none" />
+</g>
+<!-- Hut, centre right -->
+<g>
+  <path d="M252 302 L290 264 L328 302" />
+  <path d="M260 302 L260 342 M320 302 L320 342 M260 342 L320 342" />
+  <path d="M282 342 L282 318 L298 318 L298 342" />
+</g>
+<!-- Drummer, bottom left -->
+<g>
+  <circle cx="108" cy="312" r="9" />
+  <path d="M108 321 L108 360" />
+  <path d="M108 360 L92 392 M108 360 L124 392" />
+  <path d="M108 336 L132 348 M108 336 L132 356" />
+  <rect x="136" y="342" width="30" height="38" rx="6" />
+  <path d="M136 352 L166 352" />
+</g>
+<!-- Antelope, bottom right -->
+<g>
+  <path d="M368 362 L428 362" />
+  <path d="M428 362 L444 336" />
+  <circle cx="448" cy="332" r="6" />
+  <path d="M446 326 Q440 306 448 296 M452 326 Q458 308 454 296" />
+  <path d="M376 362 L372 406 M392 362 L390 406 M412 362 L414 406 M424 362 L428 406" />
+  <path d="M368 362 L356 380" />
+</g>
+<!-- Grass tufts -->
+<g>
+  <path d="M40 430 L40 446 M48 432 L52 446 M32 432 L28 446" />
+  <path d="M230 440 L230 456 M238 442 L242 456 M222 442 L218 456" />
+  <path d="M440 430 L440 446 M448 432 L452 446 M432 432 L428 446" />
+</g>
+
+</g>
+</svg>
